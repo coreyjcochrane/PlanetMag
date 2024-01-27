@@ -14,9 +14,11 @@ function [RparentEq_km, RparentPol_km, RmoonEq_km, a_AU, omegaParent_radps, omeg
 %       - ``'Callisto'``
 %       - ``'Mimas'``
 %       - ``'Enceladus'``
+%       - ``'Tethys'``
 %       - ``'Dione'``
 %       - ``'Rhea'``
 %       - ``'Titan'``
+%       - ``'Iapetus'``
 %       - ``'Miranda'``
 %       - ``'Ariel'``
 %       - ``'Umbriel'``
