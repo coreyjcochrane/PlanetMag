@@ -1,5 +1,6 @@
-function CompareJupModels(LIVE_PLOTS, scName, moonName, orbNum, moonProx_RP, PlanetMinDist_RP, ...
-    PlanetMaxDist_RP, dataDir, figDir, figXtn, SEQUENTIAL, coeffPath, FULLORBITS, FLYBYS, JUNOTOO)
+function CompareJupModels(LIVE_PLOTS, scName, opts, MPopts, moonName, orbNum, moonProx_RP, ...
+    PlanetMinDist_RP, PlanetMaxDist_RP, dataDir, figDir, figXtn, SEQUENTIAL, coeffPath, ...
+    FULLORBITS, FLYBYS, JUNOTOO)
 % Compare magnetic field measurements from spacecraft near Jupiter against each implemented
 % magnetic field model.
 %
@@ -24,6 +25,11 @@ function CompareJupModels(LIVE_PLOTS, scName, moonName, orbNum, moonProx_RP, Pla
 %   directory must exist with this name in the ``MAG`` directory within the top-level P\lanetMag
 %   directory. This directory will be searched for body-specific data files, and each of these
 %   files will be loaded.
+% opts : int, 1xnOpts, default=1:nOpts
+%   List of model option ID numbers to include in comparison, as defined in GetModelOpts.
+% MPopts : int, 1xnMPopts, default=1:nMPopts
+%   List of magnetopause model option ID numbers to include in comparison, as defined in
+%   GetModelOpts.
 % moonName : char, 1xC, default='Ganymede'
 %   Name of moon for which ``scName`` has flyby data. Flyby data is not used if ``FULLORBITS`` is
 %   true, but a name must be passed for kernel loading.
@@ -53,7 +59,7 @@ function CompareJupModels(LIVE_PLOTS, scName, moonName, orbNum, moonProx_RP, Pla
 % coeffPath : char, 1xG, default='modelCoeffs'
 %   Directory containing model coefficients files.
 % FULLORBITS : bool, default=1
-%   Whether to evalate goodness of fit from full-orbit data in System III coordinates beyond some
+%   Whether to evaluate goodness of fit from full-orbit data in System III coordinates beyond some
 %   threshold distance ``rMinMoon_RP``. Independent of ``FLYBYS``.
 % FLYBYS : bool, default=0
 %   Whether to evaluate goodness of fit from flyby data in moon coordinates. Measurements are only
@@ -71,6 +77,8 @@ function CompareJupModels(LIVE_PLOTS, scName, moonName, orbNum, moonProx_RP, Pla
 
     if ~exist('LIVE_PLOTS', 'var'); LIVE_PLOTS = 0; end
     if ~exist('scName', 'var'); scName = "Galileo"; end
+    if ~exist('opts', 'var'); nOpts = 7; opts = 1:nOpts; end
+    if ~exist('MPopts', 'var'); nMPopts = 5; MPopts = 1:(nMPopts + 1); end % Add 1 to force noMP
     if ~exist('moonName', 'var'); moonName = 'Ganymede'; end
     if ~exist('orbNum', 'var'); orbNum = -1; end
     if ~exist('moonProx_RP', 'var'); moonProx_RP = 0.1; end
@@ -98,7 +106,7 @@ function CompareJupModels(LIVE_PLOTS, scName, moonName, orbNum, moonProx_RP, Pla
     
     switch moonName
         case 'Io'
-            fbList = [0, 24, 27, 31, 32, 33];
+            fbList = [0, 24, 27, 31, 32];
             fbCode = 'IO';
         case 'Europa'
             fbList = [4, 11, 12, 14, 15, 19, 26];
@@ -256,9 +264,6 @@ function CompareJupModels(LIVE_PLOTS, scName, moonName, orbNum, moonProx_RP, Pla
     end
     
     %% Plot and calculate products
-    nOpts = 7; nMPopts = 5;
-    opts = 1:nOpts;
-    MPopts = 1:(nMPopts + 1); % Add 1 to force noMP model in addition
     for opt=opts
         for MPopt=MPopts
             if opt == 3 && MPopt ~= MPopts(1)

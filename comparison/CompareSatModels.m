@@ -5,7 +5,7 @@ function CompareSatModels(LIVE_PLOTS, LOAD_PDS_ASCII, yearRange, RELATIVE_t, REL
 %
 % Datasets:
 %
-%   * Cassini MAG: 	https://doi.org/10.17189/5rhj-sm88, volume CO-E/SW/J/S-MAG-4-SUMM-1MINAVG-V2.1
+%   * Cassini MAG: https://doi.org/10.17189/5rhj-sm88, volume CO-E/SW/J/S-MAG-4-SUMM-1MINAVG-V2.1
 %
 % Parameters
 % ----------
@@ -13,7 +13,7 @@ function CompareSatModels(LIVE_PLOTS, LOAD_PDS_ASCII, yearRange, RELATIVE_t, REL
 %   Whether to load interactive figure windows for plots (true) or print them to disk (false).
 % LOAD_PDS_ASCII : bool, default=0
 %   Whether to load in .TAB files downloaded from PDS (true) or use pre-converted and compressed
-%   .mat summery of just the important bits (false).
+%   .mat summary of just the important bits (false).
 % yearRange : int, 1xG, default=4:17
 %   Years over which to compare Cassini data. Default includes all measurements.
 % RELATIVE_t : bool, default=0
