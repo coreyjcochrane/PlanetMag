@@ -114,6 +114,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#hodogramsingle"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">HodogramSingle()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#loadspice"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">LoadSpice()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#lshelltrace"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">LshellTrace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#writetimeseries"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">WriteTimeSeries()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-modelCoeffs.printIGRFcoeffs">Model coefficient functions</a><ul>
@@ -2067,6 +2068,55 @@ and present in the model coefficients.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>double, 1xN</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="writetimeseries">
+<h3><a class="reference internal" href="#functions.WriteTimeSeries" title="functions.WriteTimeSeries"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">WriteTimeSeries()</span></code></a><a class="headerlink" href="#writetimeseries" title="Permalink to this heading"></a></h3>
+<dl class="mat function">
+<dt class="sig sig-object mat" id="functions.WriteTimeSeries">
+<span class="sig-prename descclassname"><span class="pre">functions.</span></span><span class="sig-name descname"><span class="pre">WriteTimeSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">scName</span></em>, <em class="sig-param"><span class="pre">opt</span></em>, <em class="sig-param"><span class="pre">MPopt</span></em>, <em class="sig-param"><span class="pre">moonName</span></em>, <em class="sig-param"><span class="pre">orbNum</span></em>, <em class="sig-param"><span class="pre">outFstr</span></em>, <em class="sig-param"><span class="pre">FULLORBITS</span></em><span class="sig-paren">)</span><a class="headerlink" href="#functions.WriteTimeSeries" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate a given magnetic field model and optional magnetopause model at spacecraft locations and
+save to disk.</p>
+<p>Currently implemented for Galileo, Juno, and Cassini.</p>
+<p>Datasets:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Cassini MAG: <a class="reference external" href="https://doi.org/10.17189/5rhj-sm88">https://doi.org/10.17189/5rhj-sm88</a>, volume CO-E/SW/J/S-MAG-4-SUMM-1MINAVG-V2.1</p></li>
+<li><dl class="simple">
+<dt>Galileo MAG: <a class="reference external" href="https://doi.org/10.17189/1519667">https://doi.org/10.17189/1519667</a>, volume GO-J-MAG-3-RDR-HIGHRES-V1.0 (moons)</dt><dd><p><a class="reference external" href="https://doi.org/10.17189/1519668">https://doi.org/10.17189/1519668</a>, volume GO-J-MAG-3-RDR-MAGSPHERIC-SURVEY-V1.0 (full
+orbits)</p>
+</dd>
+</dl>
+</li>
+<li><p>Juno MAG: <a class="reference external" href="https://doi.org/10.17189/1519711">https://doi.org/10.17189/1519711</a>, volume JNO-J-3-FGM-CAL-V1.0</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scName</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">string,</span> <span class="pre">default=&quot;Galileo&quot;</span></code></span>) – Spacecraft name for which magnetic field data will be compared against implemented models. A
+directory must exist with this name in the <code class="docutils literal notranslate"><span class="pre">MAG</span></code> directory within the top-level PlanetMag
+directory. This directory will be searched for body-specific data files, and each of these
+files will be loaded.</p></li>
+<li><p><strong>opt</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">int,</span> <span class="pre">default=0</span></code></span>) – Magnetic field model option ID number to evaluate, as defined in <code class="xref py py-func docutils literal notranslate"><span class="pre">GetModelOpts()</span></code>.</p></li>
+<li><p><strong>MPopt</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">int,</span> <span class="pre">default=-1</span></code></span>) – Magnetopause model option ID number to evaluate, as defined in <code class="xref py py-func docutils literal notranslate"><span class="pre">GetModelOpts()</span></code>. Passing -1 skips
+magnetopause modeling.</p></li>
+<li><p><strong>moonName</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">char,</span> <span class="pre">1xC,</span> <span class="pre">default='Io'</span></code></span>) – Name of moon for which <code class="docutils literal notranslate"><span class="pre">scName</span></code> has flyby data. Flyby data is not used if <code class="docutils literal notranslate"><span class="pre">FULLORBITS</span></code> is
+true, but a name must be passed for kernel loading.</p></li>
+<li><p><strong>orbNum</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">int,</span> <span class="pre">default=-1</span></code></span>) – <p>Orbit number (or year for Cassini) to use for data comparison. Accepts the following special
+options:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">-1</span></code>: Use all orbits/years for which data is available.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-2</span></code>: Use all orbits for which flyby data is available for <code class="docutils literal notranslate"><span class="pre">moonName</span></code>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>outFstr</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">char,</span> <span class="pre">1xE,</span> <span class="pre">default='modelDescrip'</span></code></span>) – String to append to PDS file names to make output file name. Passing ‘modelDescrip’ adds the
+magModelDescrip file name code string.</p></li>
+<li><p><strong>FULLORBITS</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">bool,</span> <span class="pre">default=0</span></code></span>) – Whether to use full-orbit MAG data files or flyby-only files. Only applies to Galileo data.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

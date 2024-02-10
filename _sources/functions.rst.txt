@@ -288,6 +288,11 @@ Additional supporting functions
 
 .. mat:autofunction:: LshellTrace
 
+:mat:func:`WriteTimeSeries`
++++++++++++++++++++++++++++
+
+.. mat:autofunction:: WriteTimeSeries
+
 
 Model coefficient functions
 ---------------------------
