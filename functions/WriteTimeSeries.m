@@ -74,7 +74,7 @@ function WriteTimeSeries(scName, opt, MPopt, moonName, orbNum, outFstr, FULLORBI
             yearRange = orbNum:orbNum;
         end
         nFiles = length(yearRange);
-        fileList = strings(nFiles,1);
+        fileList = strings(1,nFiles);
         for i=1:nFiles
             fileList(i) = fullfile(inDir, [num2str(2000+yearRange(i)) '_FGM_KRTP_1M']);
         end
@@ -91,7 +91,7 @@ function WriteTimeSeries(scName, opt, MPopt, moonName, orbNum, outFstr, FULLORBI
             nFiles2023 = length(dayRange2023);
             nFiles2024 = length(dayRange2024);
             nFiles = nFiles2023 + nFiles2024;
-            fileList = strings(nFiles,1);
+            fileList = strings(1,nFiles);
             for i=1:nFiles2023
                 fileList(i) = fullfile(inDir, ...
                     ['fgm_jno_l3_2023' sprintf('%03d', dayRange2023(i)) 'pc_r1s_v01']);
@@ -103,7 +103,7 @@ function WriteTimeSeries(scName, opt, MPopt, moonName, orbNum, outFstr, FULLORBI
         elseif strcmp(moonName, 'Europa')
             dayRange = 252:290;
             nFiles = length(dayRange);
-            fileList = strings(nFiles,1);
+            fileList = strings(1,nFiles);
             for i=1:nFiles
                 fileList(i) = fullfile(inDir, ...
                     ['fgm_jno_l3_2022' sprintf('%03d', dayRange(i)) 'pc_r1s_v01']);
@@ -112,7 +112,7 @@ function WriteTimeSeries(scName, opt, MPopt, moonName, orbNum, outFstr, FULLORBI
         elseif strcmp(moonName, 'Ganymede')
             dayRange = 133:179;
             nFiles = length(dayRange);
-            fileList = strings(nFiles,1);
+            fileList = strings(1,nFiles);
             for i=1:nFiles
                 fileList(i) = fullfile(inDir, ...
                     ['fgm_jno_l3_2021' sprintf('%03d', dayRange(i)) 'pc_r1s_v01']);
@@ -155,7 +155,7 @@ function WriteTimeSeries(scName, opt, MPopt, moonName, orbNum, outFstr, FULLORBI
         end
 
         nFiles = length(orbList);
-        fileList = strings(nFiles,1);
+        fileList = strings(1,nFiles);
         if FULLORBITS
             formatSpec = '%23s%24s%10f%10f%10f%10f%7f%7f%7f%f%[^\n\r]';
             inDir = fullfile('MAG', char(scName), 'Jupiter');
@@ -239,9 +239,9 @@ function WriteTimeSeries(scName, opt, MPopt, moonName, orbNum, outFstr, FULLORBI
     
         end
     
-        BxS3_nT = Bvec(1,:);
-        ByS3_nT = Bvec(2,:);
-        BzS3_nT = Bvec(3,:);
+        BxS3_nT = Bvec(1,:)';
+        ByS3_nT = Bvec(2,:)';
+        BzS3_nT = Bvec(3,:)';
     
         % Save data to disk
         if strcmp(outFstr, 'modelDescrip')
