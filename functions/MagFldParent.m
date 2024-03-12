@@ -244,7 +244,8 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
                 % u0I0 = 0.002792;
                 u0I0 = 0.002484; % Minimum (in paper, 124.2)
 
-            elseif strcmp(ExternalFieldModel,'Cassini11')
+            elseif strcmp(ExternalFieldModel,'Cassini11') || strcmp(ExternalFieldModel, ...
+                    'Cassini11plus')
                 % Current Sheet from Dougherty et al. (2018) Table S2
                 Ri = 6.5; % Inner radius of current sheet in RS
                 Ro = 20; % Outer radius of current sheet in RS

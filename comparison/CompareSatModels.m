@@ -16,12 +16,6 @@ function CompareSatModels(LIVE_PLOTS, LOAD_PDS_ASCII, yearRange, RELATIVE_t, REL
 %   .mat summary of just the important bits (false).
 % yearRange : int, 1xG, default=4:17
 %   Years over which to compare Cassini data. Default includes all measurements.
-% RELATIVE_t : bool, default=0
-%   Whether to plot points relative to the start of the input time series. Only has an effect when
-%   ``SEQUENTIAL = 0``.
-% RELATIVE_r : bool, default=0
-%   Whether to plot points relative to distance from the parent planet. Overrides SEQUENTIAL and
-%   RELATIVE_t.
 % scName : string, 1xS, default=["Cassini"]
 %   Spacecraft name for which magnetic field data will be compared against implemented models. A
 %   directory must exist with each name in the ``MAG`` directory within the top-level P\lanetMag
@@ -38,6 +32,12 @@ function CompareSatModels(LIVE_PLOTS, LOAD_PDS_ASCII, yearRange, RELATIVE_t, REL
 %   Extension to use for figures, which determines the file type.
 % magDataMat : char, 1xF, default='MAG/scName/ALL_FGM_KRTP_1M'
 %   File path to use for save/reload of PDS data in .mat file.
+% RELATIVE_t : bool, default=0
+%   Whether to plot points relative to the start of the input time series. Only has an effect when
+%   ``SEQUENTIAL = 0``.
+% RELATIVE_r : bool, default=0
+%   Whether to plot points relative to distance from the parent planet. Overrides SEQUENTIAL and
+%   RELATIVE_t.
 
 % Part of the PlanetMag framework for evaluation and study of planetary magnetic fields.
 % Created by Corey J. Cochrane and Marshall J. Styczinski
@@ -56,6 +56,7 @@ function CompareSatModels(LIVE_PLOTS, LOAD_PDS_ASCII, yearRange, RELATIVE_t, REL
     sc = char(scName);
     if ~exist('magDataMat', 'var'); magDataMat = fullfile('MAG', sc, 'ALL_FGM_KRTP_1M'); end
     if ~exist('RELATIVE_t', 'var'); RELATIVE_t = 0; end
+    if ~exist('RELATIVE_r', 'var'); RELATIVE_r = 0; end
     
     cspice_kclear;
     parentName = 'Saturn';
@@ -137,7 +138,7 @@ function CompareSatModels(LIVE_PLOTS, LOAD_PDS_ASCII, yearRange, RELATIVE_t, REL
     [r_km, theta, phi, xyz_km, spkParent] = GetPosSpice(sc, parentName, t_h);
 
     %% Plot and calculate products
-    nOpts = 2;
+    nOpts = 3;
     opts = 1:nOpts;
     MPopts = 0:0; % Only noMP model
     for opt=opts

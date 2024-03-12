@@ -41,8 +41,10 @@ function [MagModel, CsheetModel, MPmodel, magModelDescrip, fEnd] = GetModelOpts(
 %       - ``Saturn``:
 %           - ``1``: Burton et al. (2010) model with degree-1 external field
 %             https://doi.org/10.1029/2010GL045148
-%           - ``2`` (or ``0``): Cassini 11 + corresponding current sheet model
+%           - ``2``: Cassini 11 + corresponding 'overall' current sheet model
 %             https://doi.org/10.1126/science.aav6732
+%           - ``3`` (or ``0``): Cassini 11+ + 'overall' current sheet model from Cassini 11
+%             https://doi.org/10.1016/j.icarus.2019.113541
 %       - ``Uranus``:
 %           - ``1``: Q3 model with degree-1 external field from Connerney et al. (1987)
 %             https://doi.org/10.1029/JA092iA13p15329
@@ -226,8 +228,10 @@ function [MagModel, CsheetModel, MPmodel, magModelDescrip, fEnd] = GetModelOpts(
             % opt 2
             Cassini11 = 'MagFldSaturnCassini11';
             Cassini11sheet = 'Cassini11';
+            % opt 3 (includes Cassini 11 current sheet)
+            Cassini11plus = 'MagFldSaturnCassini11plus';
 
-            if opt == 0; opt = 2; end % Set default to Cassini 11
+            if opt == 0; opt = 3; end % Set default to Cassini 11
             switch opt
                 case 1
                     MagModel = B2010;
@@ -239,6 +243,11 @@ function [MagModel, CsheetModel, MPmodel, magModelDescrip, fEnd] = GetModelOpts(
                     CsheetModel = Cassini11sheet;
                     magModelDescrip = 'Cassini 11 field + sheet';
                     fEnd = 'Cassini11';
+                case 3
+                    MagModel = Cassini11plus;
+                    CsheetModel = Cassini11sheet;
+                    magModelDescrip = 'Cassini 11+ field + sheet';
+                    fEnd = 'Cassini11plus';
                 otherwise
                     warning(['Magnetic field model option ' num2str(opt) ...
                         ' not recognized. Defaulting to "None".'])

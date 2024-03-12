@@ -47,6 +47,8 @@ function [g, h, G, H, PlanetEqRadius, Nmax, NmaxExt] = GetGaussCoeffs(planet, ..
 %           - ``'MagFldSaturnCassini11'``: "Saturn's magnetic field revealed by the Cassini Grand
 %             Finale." https://doi.org/10.1126/science.aat5434, corrected values at
 %             https://doi.org/10.1126/science.aav6732
+%           - ``'MagFldSaturnCassini11plus'``: "The landscape of Saturn's internal magnetic field
+%             from the Cassini Grand Finale." https://doi.org/10.1016/j.icarus.2019.113541
 %       - ``Uranus``
 %           - ``'MagFldUranusQ3'``: "The magnetic field of Uranus."
 %             https://doi.org/10.1029/JA092iA13p15329 The name Q3 comes from including only a
@@ -227,7 +229,7 @@ function [g, h, G, H, PlanetEqRadius, Nmax, NmaxExt] = GetGaussCoeffs(planet, ..
                         nHeadLines, 0);
 
                 case 'MagFldSaturnCassini11'
-                    % Dougherty et al. (2018),  Saturn's magnetic field revealed by the Cassini
+                    % Dougherty et al. (2018), Saturn's magnetic field revealed by the Cassini
                     % Grand Finale
                     % Interior field parameters (Schmidt semi-normalized coefficients) in Gauss
                     % referenced to SIII coordinates, 1RS = 60,268 km
@@ -236,6 +238,19 @@ function [g, h, G, H, PlanetEqRadius, Nmax, NmaxExt] = GetGaussCoeffs(planet, ..
                     PlanetEqRadius = 60268; % km, as reported in the publication
 
                     g = dlmread(fullfile(coeffPath, 'coeffsSaturnCassini11g.csv'), ',', ...
+                        nHeadLines, 0);
+                    h = zeros(Nmax,Nmax+1);
+
+                case 'MagFldSaturnCassini11plus'
+                    % Cao et al. (2020), The landscape of Saturn s internal magnetic field from the
+                    % Cassini Grand Finale
+                    % Interior field parameters (Schmidt semi-normalized coefficients) in Gauss
+                    % referenced to SIII coordinates, 1RS = 60,268 km
+
+                    Nmax = 14;
+                    PlanetEqRadius = 60268; % km, as reported in the publication
+
+                    g = dlmread(fullfile(coeffPath, 'coeffsSaturnCassini11plusg.csv'), ',', ...
                         nHeadLines, 0);
                     h = zeros(Nmax,Nmax+1);
 
