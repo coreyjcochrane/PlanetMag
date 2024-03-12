@@ -289,10 +289,6 @@ field model.</p>
 <li><p><strong>LOAD_PDS_ASCII</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">bool,</span> <span class="pre">default=0</span></code></span>) – Whether to load in .TAB files downloaded from PDS (true) or use pre-converted and compressed
 .mat summary of just the important bits (false).</p></li>
 <li><p><strong>yearRange</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">int,</span> <span class="pre">1xG,</span> <span class="pre">default=4:17</span></code></span>) – Years over which to compare Cassini data. Default includes all measurements.</p></li>
-<li><p><strong>RELATIVE_t</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">bool,</span> <span class="pre">default=0</span></code></span>) – Whether to plot points relative to the start of the input time series. Only has an effect when
-<code class="docutils literal notranslate"><span class="pre">SEQUENTIAL</span> <span class="pre">=</span> <span class="pre">0</span></code>.</p></li>
-<li><p><strong>RELATIVE_r</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">bool,</span> <span class="pre">default=0</span></code></span>) – Whether to plot points relative to distance from the parent planet. Overrides SEQUENTIAL and
-RELATIVE_t.</p></li>
 <li><p><strong>scName</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">string,</span> <span class="pre">1xS,</span> <span class="pre">default=[&quot;Cassini&quot;]</span></code></span>) – Spacecraft name for which magnetic field data will be compared against implemented models. A
 directory must exist with each name in the <code class="docutils literal notranslate"><span class="pre">MAG</span></code> directory within the top-level PlanetMag
 directory. These directories will be searched for data files with the <code class="docutils literal notranslate"><span class="pre">.tab</span></code> extension, and
@@ -303,6 +299,10 @@ approach).</p></li>
 <li><p><strong>figDir</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">char,</span> <span class="pre">1xD,</span> <span class="pre">default='figures'</span></code></span>) – Directory to use for output figures.</p></li>
 <li><p><strong>figXtn</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">char,</span> <span class="pre">1xE,</span> <span class="pre">default='pdf'</span></code></span>) – Extension to use for figures, which determines the file type.</p></li>
 <li><p><strong>magDataMat</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">char,</span> <span class="pre">1xF,</span> <span class="pre">default='MAG/scName/ALL_FGM_KRTP_1M'</span></code></span>) – File path to use for save/reload of PDS data in .mat file.</p></li>
+<li><p><strong>RELATIVE_t</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">bool,</span> <span class="pre">default=0</span></code></span>) – Whether to plot points relative to the start of the input time series. Only has an effect when
+<code class="docutils literal notranslate"><span class="pre">SEQUENTIAL</span> <span class="pre">=</span> <span class="pre">0</span></code>.</p></li>
+<li><p><strong>RELATIVE_r</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">bool,</span> <span class="pre">default=0</span></code></span>) – Whether to plot points relative to distance from the parent planet. Overrides SEQUENTIAL and
+RELATIVE_t.</p></li>
 </ul>
 </dd>
 </dl>
