@@ -1,4 +1,4 @@
-function [interpreter, font] = SetPlotDefaults
+function [interpreter, font, fontsize] = SetPlotDefaults
 % Sets global Matlab plotting defaults, including some global font switches.
 %
 % Returns
@@ -7,6 +7,11 @@ function [interpreter, font] = SetPlotDefaults
 %   The default interpreter to use for rendering text labels on plots.
 % font : char, 1xD
 %   The default font to use for text labels on plots.
+% fontsize : double
+%   The default font size in pt to use for text labels on plots.
+%
+% Sets globals
+% ------------
 % nmTxt : char, 1xE (global)
 %   Font switch to use in LaTeX-formatted labels with "normal" text.
 % bnmTxt : char, 1xF (global)
@@ -33,5 +38,6 @@ function [interpreter, font] = SetPlotDefaults
 
     interpreter = 'tex';
     font = 'Times';
+    fontsize = 16;
 
 end

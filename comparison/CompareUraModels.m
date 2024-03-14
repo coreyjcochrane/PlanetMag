@@ -118,8 +118,8 @@ function CompareUraModels(LIVE_PLOTS, scName, SEQUENTIAL, coeffPath, figDir, fig
         fig = figure('Visible', 'off', 'Name', windowName);
     end
     clf(); hold on;
-    [interpreter, font] = SetPlotDefaults();
-    ApplyPlotDefaults(fig, interpreter, font);
+    [interpreter, font, fontsize] = SetPlotDefaults();
+    ApplyPlotDefaults(fig, interpreter, font, fontsize);
 
     plot3(x,y,z, 'LineWidth', 1.5);
     the = linspace(0,pi,50); ph = linspace(0,2*pi,100);

@@ -53,8 +53,8 @@ function PlotSpectrum(moonName, LIVE_PLOTS, figNumber, dataDir, figDir, fPattern
         fig = figure('Visible', 'off', 'Name', windowName);
     end
     hold on;
-    [interpreter, font] = SetPlotDefaults();
-    ApplyPlotDefaults(fig, interpreter, font);
+    [interpreter, font, fontsize] = SetPlotDefaults();
+    ApplyPlotDefaults(fig, interpreter, font, fontsize);
     
     plot(T_h, abs(B1vec1), 'Color', 'b');
     plot(T_h, abs(B1vec2), 'Color', 'k');

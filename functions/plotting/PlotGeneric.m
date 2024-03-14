@@ -101,8 +101,8 @@ function fig = PlotGeneric(xx, yy, legendStrings, windowName, titleInfo, xInfo, 
         fig = figure('Visible', 'off', 'Name', windowName);
     end
     hold on;
-    [interpreter, font] = SetPlotDefaults();
-    ApplyPlotDefaults(fig, interpreter, font);
+    [interpreter, font, fontsize] = SetPlotDefaults();
+    ApplyPlotDefaults(fig, interpreter, font, fontsize);
 
     yySize = size(yy);
     nPlots = yySize(1);

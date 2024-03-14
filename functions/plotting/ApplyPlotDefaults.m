@@ -1,4 +1,4 @@
-function ApplyPlotDefaults(fig, interpreter, font)
+function ApplyPlotDefaults(fig, interpreter, font, fontsize)
 % Applies default settings to plot labels.
 %
 % Parameters
@@ -9,6 +9,8 @@ function ApplyPlotDefaults(fig, interpreter, font)
 %   The default interpreter to use for rendering text labels on plots.
 % font : char, 1xD
 %   The default font to use for text labels on plots.
+% fontsize : double
+%   The default font size in pt to use for text labels on plots.
 
 % Part of the PlanetMag framework for evaluation and study of planetary magnetic fields.
 % Created by Corey J. Cochrane and Marshall J. Styczinski
@@ -22,5 +24,6 @@ function ApplyPlotDefaults(fig, interpreter, font)
     set(fig, 'defaultTextFontName', font);
     set(fig, 'defaultAxesFontName', font);
     set(fig, 'defaultLegendFontName', font);
+    set(gca, 'fontSize', fontsize);
 
 end

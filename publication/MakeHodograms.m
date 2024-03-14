@@ -46,8 +46,8 @@ function MakeHodograms
         fig = figure('Visible', 'off', 'Name', windowName);
     end
     hold on;
-    [interpreter, font] = SetPlotDefaults();
-    ApplyPlotDefaults(fig, interpreter, font);
+    [interpreter, font, fontsize] = SetPlotDefaults();
+    ApplyPlotDefaults(fig, interpreter, font, fontsize);
     tiles = tiledlayout(1, nMoons, 'TileSpacing', 'tight', 'Padding', 'tight');
 
     for i=1:nMoons

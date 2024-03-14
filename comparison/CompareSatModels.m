@@ -165,8 +165,8 @@ function CompareSatModels(LIVE_PLOTS, LOAD_PDS_ASCII, yearRange, RELATIVE_t, REL
         fig = figure('Visible', 'off', 'Name', windowName);
     end
     clf(); hold on;
-    [interpreter, font] = SetPlotDefaults();
-    ApplyPlotDefaults(fig, interpreter, font);
+    [interpreter, font, fontsize] = SetPlotDefaults();
+    ApplyPlotDefaults(fig, interpreter, font, fontsize);
     
     % Plot planet, pole, and rings for illustrative purposes
     pbaspect([1 1 1]);

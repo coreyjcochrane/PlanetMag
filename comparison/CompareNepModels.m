@@ -151,8 +151,8 @@ function CompareNepModels(LIVE_PLOTS, scName, SEQUENTIAL, coeffPath, figDir, fig
         fig = figure('Visible', 'off', 'Name', windowName);
     end
     clf(); hold on;
-    [interpreter, font] = SetPlotDefaults();
-    ApplyPlotDefaults(fig, interpreter, font);
+    [interpreter, font, fontsize] = SetPlotDefaults();
+    ApplyPlotDefaults(fig, interpreter, font, fontsize);
 
     the = linspace(0,pi,19); ph = linspace(0,2*pi,37);
     [the2D, ph2D] = meshgrid(the,ph);

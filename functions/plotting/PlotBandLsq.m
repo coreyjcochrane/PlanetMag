@@ -90,7 +90,8 @@ function PlotBandLsq(ets, t_h, r_km, theta, phi, xyz_km, BrSC, BthSC, BphiSC, sc
     
     if isempty(jt_h); JUNOTOO=0; else; JUNOTOO=1; end
     
-    [MagModel, CsheetModel, MPmodel, magModelDescrip, ~] = GetModelOpts(parentName, opt, MPopt);
+    [MagModel, CsheetModel, MPmodel, magModelDescrip, fModel] = GetModelOpts(parentName, opt, ...
+        MPopt);
     magPhase = 0;
 
     Nmax = 10;
@@ -164,21 +165,21 @@ function PlotBandLsq(ets, t_h, r_km, theta, phi, xyz_km, BrSC, BthSC, BphiSC, sc
     yInfo = [mathTxt 'B_r' nmTxt ' component (nT)'];
     legendStrings = [string(magModelDescrip), string(scDataName)];
     titleInfo = commonTitle;
-    fName = [char(scName) parentName 'BrComparison' magModelDescrip fEnd];
+    fName = [char(scName) parentName 'BrComparison' fModel fEnd];
     PlotGeneric(xx, yy, legendStrings, windowName, titleInfo, xInfo, yInfo, fName, ...
         figDir, figXtn, LIVE_PLOTS, figNumBase + 1);
 
     windowName = [char(scName) 'Bth, ' orbStr ', ' magModelDescrip];
     yy = [Bth; BthSC];
     yInfo = [mathTxt 'B_\theta' nmTxt ' component (nT)'];
-    fName = [char(scName) parentName 'BthComparison' magModelDescrip fEnd];
+    fName = [char(scName) parentName 'BthComparison' fModel fEnd];
     PlotGeneric(xx, yy, legendStrings, windowName, titleInfo, xInfo, yInfo, fName, ...
         figDir, figXtn, LIVE_PLOTS, figNumBase + 2);
 
     windowName = [char(scName) 'Bphi, ' orbStr ', ' magModelDescrip];
     yy = [Bphi; BphiSC];
     yInfo = [mathTxt 'B_\phi' nmTxt ' component (nT)'];
-    fName = [char(scName) parentName 'BphiComparison' magModelDescrip fEnd];
+    fName = [char(scName) parentName 'BphiComparison' fModel fEnd];
     PlotGeneric(xx, yy, legendStrings, windowName, titleInfo, xInfo, yInfo, fName, ...
         figDir, figXtn, LIVE_PLOTS, figNumBase + 3);
 
@@ -187,7 +188,7 @@ function PlotBandLsq(ets, t_h, r_km, theta, phi, xyz_km, BrSC, BthSC, BphiSC, sc
     yInfo = 'Component difference (nT)';
     legendStrings = [string([ mathTxt '\Delta B_r']), string([mathTxt '\Delta B_\theta']), ...
         string([mathTxt '\Delta B_\phi'])];
-    fName = [char(scName) parentName 'DeltaBComparison' magModelDescrip fEnd];
+    fName = [char(scName) parentName 'DeltaBComparison' fModel fEnd];
     PlotGeneric(xx, yy, legendStrings, windowName, titleInfo, xInfo, yInfo, fName, ...
         figDir, figXtn, LIVE_PLOTS, figNumBase + 4);
 
