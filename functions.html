@@ -2680,7 +2680,7 @@ frame in nT.</p>
 <h3><a class="reference internal" href="#functions.plotting.ApplyPlotDefaults" title="functions.plotting.ApplyPlotDefaults"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">ApplyPlotDefaults()</span></code></a><a class="headerlink" href="#applyplotdefaults" title="Permalink to this heading"></a></h3>
 <dl class="mat function">
 <dt class="sig sig-object mat" id="functions.plotting.ApplyPlotDefaults">
-<span class="sig-prename descclassname"><span class="pre">functions.plotting.</span></span><span class="sig-name descname"><span class="pre">ApplyPlotDefaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fig</span></em>, <em class="sig-param"><span class="pre">interpreter</span></em>, <em class="sig-param"><span class="pre">font</span></em><span class="sig-paren">)</span><a class="headerlink" href="#functions.plotting.ApplyPlotDefaults" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">functions.plotting.</span></span><span class="sig-name descname"><span class="pre">ApplyPlotDefaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fig</span></em>, <em class="sig-param"><span class="pre">interpreter</span></em>, <em class="sig-param"><span class="pre">font</span></em>, <em class="sig-param"><span class="pre">fontsize</span></em><span class="sig-paren">)</span><a class="headerlink" href="#functions.plotting.ApplyPlotDefaults" title="Permalink to this definition"></a></dt>
 <dd><p>Applies default settings to plot labels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2688,6 +2688,7 @@ frame in nT.</p>
 <li><p><strong>fig</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">figure</span></code></span>) – Figure object for the plot to adjust.</p></li>
 <li><p><strong>interpreter</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">char,</span> <span class="pre">1xC</span></code></span>) – The default interpreter to use for rendering text labels on plots.</p></li>
 <li><p><strong>font</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">char,</span> <span class="pre">1xD</span></code></span>) – The default font to use for text labels on plots.</p></li>
+<li><p><strong>fontsize</strong> (<span><code class="xref mat mat-obj docutils literal notranslate"><span class="pre">double</span></code></span>) – The default font size in pt to use for text labels on plots.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2886,6 +2887,9 @@ assigned number, use increment) is used.</p></li>
 <dd class="field-odd"><p><ul class="simple">
 <li><p><strong>interpreter</strong> (<em>char, 1xC</em>) – The default interpreter to use for rendering text labels on plots.</p></li>
 <li><p><strong>font</strong> (<em>char, 1xD</em>) – The default font to use for text labels on plots.</p></li>
+<li><p><strong>fontsize</strong> (<em>double</em>) – The default font size in pt to use for text labels on plots.</p></li>
+<li><p><em>Sets globals</em></p></li>
+<li><p><em>————</em></p></li>
 <li><p><strong>nmTxt</strong> (<em>char, 1xE (global)</em>) – Font switch to use in LaTeX-formatted labels with “normal” text.</p></li>
 <li><p><strong>bnmTxt</strong> (<em>char, 1xF (global)</em>) – Font switch to use in LaTeX-formatted title labels (with bold text).</p></li>
 <li><p><strong>mathTxt</strong> (<em>char, 1xG (global)</em>) – Font switch to use in LaTeX-formatted labels with math text.</p></li>
