@@ -4,7 +4,7 @@ function CompareUraModels(LIVE_PLOTS, scName, SEQUENTIAL, coeffPath, figDir, fig
 %
 % Datasets:
 %
-%   * Voyager 2 MAG: https://doi.org/10.17189/1520034, volume VG2-U-MAG-4-RDR-U1COORDS-48SEC-V1.0
+%   * Voyager 2 MAG: https://doi.org/10.17189/1520034, volume VG2-U-MAG-4-SUMM-U1COORDS-48SEC-V1.0
 %
 % Parameters
 % ----------
