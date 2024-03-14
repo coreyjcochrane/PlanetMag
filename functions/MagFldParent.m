@@ -239,10 +239,10 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
                 D = 3.6;
                 Theta0 = 9.3*pi/180;
                 Phi0 = (360-204.2)*pi/180-magPhase;
-                % u0I0 = 0.003058; % Maximum (in paper, 152.9)
+                % u0I0 = 0.003122; % Maximum (in paper, 156.1)
                 % Average current constant in Gauss (Connerney 1982: u0I0/2 = 139.6nT)
-                % u0I0 = 0.002792;
-                u0I0 = 0.002484; % Minimum (in paper, 124.2)
+                u0I0 = 0.002792;
+                % u0I0 = 0.002484; % Minimum (in paper, 124.2)
 
             elseif strcmp(ExternalFieldModel,'Cassini11') || strcmp(ExternalFieldModel, ...
                     'Cassini11plus')
