@@ -152,12 +152,24 @@ Frames Definitions
       EUROPA_PHI_O            IAU_JUPITER            1859502
       GANYMEDE_PHI_O          IAU_JUPITER            1859503
       CALLISTO_PHI_O          IAU_JUPITER            1859504
+      IO_PHI_OMEGA            IAU_JUPITER            1859511
+      EUROPA_PHI_OMEGA        IAU_JUPITER            1859512
+      GANYMEDE_PHI_OMEGA      IAU_JUPITER            1859513
+      CALLISTO_PHI_OMEGA      IAU_JUPITER            1859514
       
       MOON_PHI_O frames:
         -- +Z is aligned with the Jupiter spin pole (primary axis)
         -- +Y is in the direction of the component of the Moon-Jupiter
            vector perpendicular to Z (secondary axis directed at Jupiter)
         -- centered on the moon
+        -- This less-explicit definition may be deprecated in future in
+           favor of the more-descriptive MOON_PHI_OMEGA naming.
+        
+      MOON_PHI_OMEGA frames:
+        -- Identical to MOON_PHI_O, intended to remove ambiguity in
+           definitions of MPhiO frame definitions across the community
+           and improve forward compatibility as the above frames may 
+           be removed in future for clarity.
          
         Name                  Relative to            NAIF ID
     ======================  =====================  ============
@@ -395,6 +407,82 @@ Frames Definitions
     FRAME_1859504_SEC_OBSERVER     = 'CALLISTO'
     FRAME_1859504_SEC_TARGET       = 'JUPITER'
     FRAME_1859504_SEC_ABCORR       = 'NONE'
+        
+    FRAME_IO_PHI_OMEGA             = 1859511
+    FRAME_1859511_NAME             = 'IO_PHI_OMEGA'
+    FRAME_1859511_CLASS            = 5
+    FRAME_1859511_CLASS_ID         = 1859511
+    FRAME_1859511_CENTER           = 501
+    FRAME_1859511_RELATIVE         = 'J2000'
+    FRAME_1859511_DEF_STYLE        = 'PARAMETERIZED'
+    FRAME_1859511_FAMILY           = 'TWO-VECTOR'
+    FRAME_1859511_PRI_AXIS         = 'Z'
+    FRAME_1859511_PRI_VECTOR_DEF   = 'CONSTANT'
+    FRAME_1859511_PRI_FRAME        = 'IAU_JUPITER'
+    FRAME_1859511_PRI_SPEC         = 'RECTANGULAR'
+    FRAME_1859511_PRI_VECTOR       = ( 0, 0, 1 )
+    FRAME_1859511_SEC_AXIS         = 'Y'
+    FRAME_1859511_SEC_VECTOR_DEF   = 'OBSERVER_TARGET_POSITION'
+    FRAME_1859511_SEC_OBSERVER     = 'IO'
+    FRAME_1859511_SEC_TARGET       = 'JUPITER'
+    FRAME_1859511_SEC_ABCORR       = 'NONE'
+
+    FRAME_EUROPA_PHI_OMEGA         = 1859512
+    FRAME_1859512_NAME             = 'EUROPA_PHI_OMEGA'
+    FRAME_1859512_CLASS            = 5
+    FRAME_1859512_CLASS_ID         = 1859512
+    FRAME_1859512_CENTER           = 502
+    FRAME_1859512_RELATIVE         = 'J2000'
+    FRAME_1859512_DEF_STYLE        = 'PARAMETERIZED'
+    FRAME_1859512_FAMILY           = 'TWO-VECTOR'
+    FRAME_1859512_PRI_AXIS         = 'Z'
+    FRAME_1859512_PRI_VECTOR_DEF   = 'CONSTANT'
+    FRAME_1859512_PRI_FRAME        = 'IAU_JUPITER'
+    FRAME_1859512_PRI_SPEC         = 'RECTANGULAR'
+    FRAME_1859512_PRI_VECTOR       = ( 0, 0, 1 )
+    FRAME_1859512_SEC_AXIS         = 'Y'
+    FRAME_1859512_SEC_VECTOR_DEF   = 'OBSERVER_TARGET_POSITION'
+    FRAME_1859512_SEC_OBSERVER     = 'EUROPA'
+    FRAME_1859512_SEC_TARGET       = 'JUPITER'
+    FRAME_1859512_SEC_ABCORR       = 'NONE'
+
+    FRAME_GANYMEDE_PHI_OMEGA       = 1859513
+    FRAME_1859513_NAME             = 'GANYMEDE_PHI_OMEGA'
+    FRAME_1859513_CLASS            = 5
+    FRAME_1859513_CLASS_ID         = 1859513
+    FRAME_1859513_CENTER           = 503
+    FRAME_1859513_RELATIVE         = 'J2000'
+    FRAME_1859513_DEF_STYLE        = 'PARAMETERIZED'
+    FRAME_1859513_FAMILY           = 'TWO-VECTOR'
+    FRAME_1859513_PRI_AXIS         = 'Z'
+    FRAME_1859513_PRI_VECTOR_DEF   = 'CONSTANT'
+    FRAME_1859513_PRI_FRAME        = 'IAU_JUPITER'
+    FRAME_1859513_PRI_SPEC         = 'RECTANGULAR'
+    FRAME_1859513_PRI_VECTOR       = ( 0, 0, 1 )
+    FRAME_1859513_SEC_AXIS         = 'Y'
+    FRAME_1859513_SEC_VECTOR_DEF   = 'OBSERVER_TARGET_POSITION'
+    FRAME_1859513_SEC_OBSERVER     = 'GANYMEDE'
+    FRAME_1859513_SEC_TARGET       = 'JUPITER'
+    FRAME_1859513_SEC_ABCORR       = 'NONE'
+
+    FRAME_CALLISTO_PHI_OMEGA       = 1859514
+    FRAME_1859514_NAME             = 'CALLISTO_PHI_OMEGA'
+    FRAME_1859514_CLASS            = 5
+    FRAME_1859514_CLASS_ID         = 1859514
+    FRAME_1859514_CENTER           = 504
+    FRAME_1859514_RELATIVE         = 'J2000'
+    FRAME_1859514_DEF_STYLE        = 'PARAMETERIZED'
+    FRAME_1859514_FAMILY           = 'TWO-VECTOR'
+    FRAME_1859514_PRI_AXIS         = 'Z'
+    FRAME_1859514_PRI_VECTOR_DEF   = 'CONSTANT'
+    FRAME_1859514_PRI_FRAME        = 'IAU_JUPITER'
+    FRAME_1859514_PRI_SPEC         = 'RECTANGULAR'
+    FRAME_1859514_PRI_VECTOR       = ( 0, 0, 1 )
+    FRAME_1859514_SEC_AXIS         = 'Y'
+    FRAME_1859514_SEC_VECTOR_DEF   = 'OBSERVER_TARGET_POSITION'
+    FRAME_1859514_SEC_OBSERVER     = 'CALLISTO'
+    FRAME_1859514_SEC_TARGET       = 'JUPITER'
+    FRAME_1859514_SEC_ABCORR       = 'NONE'
       
     FRAME_ESO                     = 1850063
     FRAME_1850063_NAME            = 'ESO'

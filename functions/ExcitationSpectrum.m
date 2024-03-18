@@ -134,7 +134,7 @@ function [Tpeak_h, B0vec, B1vec] = ExcitationSpectrum(moonName, nOsc, rate, Tint
     else
         IAU = ['IAU_' upper(moonName)];
         if DO_EPO && strcmp(moonName,'Europa')
-            EPhiO = 'EUROPAM_EUROPA_E_PHI_O';
+            EPhiO = 'EUROPA_PHI_OMEGA';
             moonCoords = EPhiO;
             coordType = [math 'E\phi\Omega' nm];
         else

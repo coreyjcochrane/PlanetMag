@@ -19,7 +19,7 @@ function CompareCoords
     for i=1:length(moons)
         moon = char(moons(i));
         spkMoon = upper(['IAU_' moon]);
-        spkmPhiO = upper([moon '_PHI_O']);
+        spkmPhiO = upper([moon '_PHI_OMEGA']);
 
         LoadSpice(moon,'None');
         [~, ~, RmoonEq_km, ~, ~, ~, ~, Tmoon_s, ~, ~] = GetBodyParams(moon);
