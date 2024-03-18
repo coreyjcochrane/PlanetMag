@@ -69,9 +69,10 @@ models = {
         7: f'JRM33C2020{mpEnd}'
     },
     'Saturn': {
-        0: f'Cassini11{mpEnd}',
+        0: f'Cassini11plus{mpEnd}',
         1: f'B2010{mpEnd}',
-        2: f'Cassini11{mpEnd}'
+        2: f'Cassini11{mpEnd}',
+        3: f'Cassini11plus{mpEnd}'
     },
     'Uranus': {
         0: f'AH5{mpEnd}',
@@ -335,6 +336,7 @@ def loadSurfaceMap(planet, model=None, ioDir='publication', fBase='surfMap_', ve
 
     Bout_G = []
     titles = []
+    cbarTitles = []
     for file in inpFile:
         data = loadmat(f'{file}.mat')
         magModelDescrip = data['magModelDescrip'][0, 0]
@@ -365,9 +367,10 @@ def loadSurfaceMap(planet, model=None, ioDir='publication', fBase='surfMap_', ve
                              '"theta", "phi", "x", "y", "z".')
 
         Bout_G.append(np.squeeze(Bcomp_G))
-        titles.append(f'{planet} {magModelDescrip} $B_{vecCompStr}$ (G)')
+        titles.append(f'{planet} {magModelDescrip} $B_{vecCompStr}~(\mathrm{{G}})$')
+        cbarTitles.append(f'$B_{vecCompStr}~(\mathrm{{G}})$')
 
-    return Bout_G, titles, inpFile
+    return Bout_G, titles, cbarTitles, inpFile
 
 
 def healpixMap(ax, Bplot_G, vecComp, title, levels=None, cmap=None):
@@ -415,7 +418,7 @@ def healpixMap(ax, Bplot_G, vecComp, title, levels=None, cmap=None):
     ax.clabel(asymContours, fmt=Cformat, fontsize=cLabelFontSize, inline_spacing=cLabelPad)
     ax.set_title(title, size=titleFontSize)
     ax.set_aspect(1)
-    return
+    return asymMap
 
 
 def plotAllIndividual():
@@ -424,19 +427,21 @@ def plotAllIndividual():
     """
 
     for planet in ['Jupiter', 'Saturn', 'Uranus', 'Neptune']:
-        Bout_G, titles, figFiles = loadSurfaceMap(planet, model='all', vecComp=vecCompChoice)
+        Bout_G, titles, cbarTitles, figFiles = loadSurfaceMap(planet, model='all', vecComp=vecCompChoice)
         if MATCH_PREV:
             doLevels = prevCont[planet]
         else:
             doLevels = None
 
-        for Bplot_G, title, file in zip(Bout_G, titles, figFiles):
+        for Bplot_G, title, cbarTitle, file in zip(Bout_G, titles, cbarTitles, figFiles):
             outFile = f'{file}.pdf'
             fig = plt.figure(figsize=deftFigsize)
             grid = GridSpec(1, 1)
             ax = fig.add_subplot(grid[0, 0])
 
-            healpixMap(ax, Bplot_G, vecCompChoice, title, levels=doLevels)
+            themap = healpixMap(ax, Bplot_G, vecCompChoice, title, levels=doLevels)
+            cbar = fig.colorbar(themap, ax=ax)
+            cbar.ax.set_title(cbarTitle)
             plt.tight_layout()
             fig.savefig(outFile, format='pdf', dpi=300, metadata=meta)
             log.debug(f'Surface field map figure saved to file: {outFile}')
@@ -467,8 +472,10 @@ def plotDefaultTogether(fBase='surfMap_'):
         else:
             doLevels = None
 
-        Bplot_G, title, _ = loadSurfaceMap(planet, model=0, vecComp=vecCompChoice)
-        healpixMap(ax, Bplot_G[0], vecCompChoice, title[0], cmap=None, levels=doLevels)
+        Bplot_G, title, cbarTitle, _ = loadSurfaceMap(planet, model=0, vecComp=vecCompChoice)
+        themap = healpixMap(ax, Bplot_G[0], vecCompChoice, title[0], cmap=None, levels=doLevels)
+        cbar = fig.colorbar(themap, ax=ax)
+        cbar.ax.set_title(cbarTitle[0])
 
     plt.tight_layout()
     fig.savefig(outFile, bbox_inches='tight', format='pdf', dpi=300, metadata=meta)

@@ -38,6 +38,6 @@ function [interpreter, font, fontsize] = SetPlotDefaults
 
     interpreter = 'tex';
     font = 'Times';
-    fontsize = 16;
+    fontsize = 12;
 
 end

@@ -15,6 +15,8 @@ function MakeHodograms
     datDir = 'out';
     tileSize = 2; % in inches
     pad = 0.025*tileSize;
+    INC_MODEL = 0; % Whether to include model name in plot titles
+    INC_AX_LBLS = 1; % Whether to include axis labels
 
     %% Jupiter family
     parentName = 'Jupiter';
@@ -64,7 +66,8 @@ function MakeHodograms
         if ~strcmp(outCoords(1:3), 'IAU'); SPHOUT = 1; end
 
         nexttile
-        PlotHodogramTile(moonName, parentName, magModelDescrip, BvecMoon, SPHOUT, cfmt{i});
+        PlotHodogramTile(moonName, parentName, magModelDescrip, BvecMoon, SPHOUT, cfmt{i}, 1, ...
+            fontsize, INC_MODEL, INC_AX_LBLS);
     end
 
     fName = [parentName 'FamilyHodogram'];
@@ -111,7 +114,7 @@ function MakeHodograms
         fig = figure('Visible', 'off', 'Name', windowName);
     end
     hold on;
-    ApplyPlotDefaults(fig, interpreter, font);
+    ApplyPlotDefaults(fig, interpreter, font, fontsize);
     tiles = tiledlayout(1, nMoons, 'TileSpacing', 'tight', 'Padding', 'tight');
 
     for i=1:nMoons
@@ -123,7 +126,8 @@ function MakeHodograms
         if ~strcmp(outCoords(1:3), 'IAU'); SPHOUT = 1; end
 
         nexttile
-        PlotHodogramTile(moonName, parentName, magModelDescrip, BvecMoon, SPHOUT, cfmt{i}, 0);
+        PlotHodogramTile(moonName, parentName, magModelDescrip, BvecMoon, SPHOUT, cfmt{i}, 0, ...
+            fontsize, INC_MODEL, INC_AX_LBLS);
     end
 
     fName = [parentName 'FamilyHodogram1'];
@@ -165,7 +169,7 @@ function MakeHodograms
         fig = figure('Visible', 'off', 'Name', windowName);
     end
     hold on;
-    ApplyPlotDefaults(fig, interpreter, font);
+    ApplyPlotDefaults(fig, interpreter, font, fontsize);
     tiles = tiledlayout(1, nMoons, 'TileSpacing', 'tight', 'Padding', 'tight');
 
     for i=1:nMoons
@@ -177,7 +181,8 @@ function MakeHodograms
         if ~strcmp(outCoords(1:3), 'IAU'); SPHOUT = 1; end
 
         nexttile
-        PlotHodogramTile(moonName, parentName, magModelDescrip, BvecMoon, SPHOUT, cfmt{i}, 0);
+        PlotHodogramTile(moonName, parentName, magModelDescrip, BvecMoon, SPHOUT, cfmt{i}, 0, ...
+            fontsize, INC_MODEL, INC_AX_LBLS);
     end
 
     fName = [parentName 'FamilyHodogram2'];
@@ -224,7 +229,7 @@ function MakeHodograms
         fig = figure('Visible', 'off', 'Name', windowName);
     end
     hold on;
-    ApplyPlotDefaults(fig, interpreter, font);
+    ApplyPlotDefaults(fig, interpreter, font, fontsize);
     tiles = tiledlayout(1, nMoons, 'TileSpacing', 'tight', 'Padding', 'tight');
 
     for i=1:nMoons
@@ -235,7 +240,8 @@ function MakeHodograms
         if ~strcmp(outCoords(1:3), 'IAU'); SPHOUT = 1; end
 
         nexttile
-        PlotHodogramTile(moonName, parentName, magModelDescrip, BvecMoon, SPHOUT, cfmt{i});
+        PlotHodogramTile(moonName, parentName, magModelDescrip, BvecMoon, SPHOUT, cfmt{i}, 1, ...
+            fontsize, INC_MODEL, INC_AX_LBLS);
     end
 
     fName = [parentName 'FamilyHodogram'];
@@ -277,10 +283,11 @@ function MakeHodograms
         fig = figure('Visible', 'off', 'Name', windowName);
     end
     hold on;
-    ApplyPlotDefaults(fig, interpreter, font);
+    ApplyPlotDefaults(fig, interpreter, font, fontsize);
     tiles = tiledlayout(1, nMoons, 'TileSpacing', 'tight', 'Padding', 'tight');
     nexttile
-    PlotHodogramTile(moonName, parentName, magModelDescrip, BvecMoon, SPHOUT, cfmt);
+    PlotHodogramTile(moonName, parentName, magModelDescrip, BvecMoon, SPHOUT, cfmt, 1, ...
+        fontsize, INC_MODEL, INC_AX_LBLS);
 
     fName = [parentName 'FamilyHodogram'];
     outFig = fullfile(figDir, [fName '.' figXtn]);
@@ -296,7 +303,7 @@ function MakeHodograms
 end
 
 function [xInfo, yInfo] = PlotHodogramTile(moonName, parentName, magModelDescrip, BvecMoon, ...
-    SPHOUT, cfmt, LIMS)
+    SPHOUT, cfmt, LIMS, fontsize, INC_MODEL, INC_AX_LBLS)
     if ~exist('LIMS', 'var'); LIMS = 1; end
     [xx, yy, ~, ~, xInfo, yInfo, ~, xlims, ylims] = HodogramSingle( ...
             moonName, parentName, magModelDescrip, BvecMoon, SPHOUT, 0, 0);
@@ -304,9 +311,19 @@ function [xInfo, yInfo] = PlotHodogramTile(moonName, parentName, magModelDescrip
     plot(xx, yy, 'color', cfmt);
     pbaspect([1 1 1])
     daspect([1 1 1])
-    title([moonName ', ' magModelDescrip]);
+    if INC_MODEL
+        thetitle = [moonName ', ' magModelDescrip];
+    else
+        thetitle = moonName;
+    end
+    title(thetitle);
     if LIMS
         xlim(xlims);
         ylim(ylims);
     end
+    if INC_AX_LBLS
+        xlabel(xInfo);
+        ylabel(yInfo);
+    end
+    set(gca, 'fontSize', fontsize);
 end

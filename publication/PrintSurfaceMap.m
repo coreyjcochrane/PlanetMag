@@ -50,7 +50,7 @@ function PrintSurfaceMap(planet, model, hpDir, hpFname, outDir, outFbase)
         case 'Jupiter'
             opts = 1:7;
         case 'Saturn'
-            opts = 1:2;
+            opts = 1:3;
         case 'Uranus'
             opts = 1:2;
         case 'Neptune'
