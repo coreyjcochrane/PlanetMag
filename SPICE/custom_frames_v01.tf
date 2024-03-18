@@ -11,6 +11,12 @@ Custom Dynamic Frames Kernel
 Version and Date
 ========================================================================
 
+    Version 1.5 -- March 17, 2024 -- Marshall J. Styczinski, Blue Marble
+      Space Institute of Science
+    
+      Added MPhiOmega frames that are identical to MPhiO frames, intended
+      to clear up ambiguity across community definitions for MPhiO frames.
+
     Version 1.4 -- November 27, 2023 -- Marshall J. Styczinski, JPL
     
       Added Earth-Sun-Magnetic and Earth-Sun-Orbital frames akin to
