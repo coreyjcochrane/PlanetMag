@@ -53,7 +53,8 @@ To fully install PlanetMag and access all features, complete the following. Note
 1. Download spacecraft magnetic data for comparison to the `MAG/sc` directory, where `sc` is the name of the spacecraft.
 
 ## Running the software
-1. Run `PlanetMag.m` from the directory it is in to test for full functionality and a demonstration of evaluation of excitation moments (amplitude and phase of oscillations) applied to Europa by Jupiter.
+1. Add the top-level `PlanetMag` directory and all subdirectories to the Matlab path and navigate to the top-level `PlanetMag` directory.
+1. Run `PlanetMag.m` to test for full functionality and a demonstration of evaluation of excitation moments (amplitude and phase of oscillations) applied to Europa by Jupiter.
 1. Comparison between magnetic models requires downloading spacecraft data from PDS into MAG/Mission, where "Mission" is the name of the spacecraft from which data will be compared. .tab files from PDS should keep the same filenames. 
     1. Compare field models evaluated with `PlanetMag.m` using the `Comparison` scripts in the `comparison` directory.
     1. Swarm data is used for Earth field model validation. Data files are available at <https://swarm-diss.eo.esa.int/#swarm/Level1b/Latest_baselines/MAGx_LR>
