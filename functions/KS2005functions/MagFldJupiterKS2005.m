@@ -6,7 +6,7 @@ function [Bvec, Mdip, Odip] = MagFldJupiterKS2005(r_km, theta, phi, ets, SPHOUT,
 % Model implementation based on Fortran code from K. Khurana and H. Schwarzl after Khurana and
 % Schwarzl (2005) https://doi.org/10.1029/2004JA010757. Much of the original software was
 % refactored to create this module, although some functions (e.g. KS_VIP4noDipole, KS_Upot) were
-% difficult to interpret and so were translated near-exactly without refactoring. This functions
+% difficult to interpret and so were translated near-exactly without refactoring. These functions
 % are identifiable from their use of non-descript variable naming, i.e. lots of single-letter
 % variable names. In several places, more precise model coefficients or corrections to certain
 % parameters have been implemented, but can be toggled off by setting ``AS_CODED`` to true, thereby
