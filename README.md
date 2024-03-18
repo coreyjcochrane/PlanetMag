@@ -15,7 +15,12 @@ This scientific software is the brain child of Corey J. Cochrane and Erik Sturm.
 Questions about PlanetMag? Please contact Corey J. Cochrane at corey.j.cochrane@jpl.nasa.gov. If you run into problems or need help with using the software, please contact maintainer Marshall J. Styczinski at itsmoosh@gmail.com.
 
 ## Installation
-PlanetMag requires Mice — [the Matlab implementation of the SPICE toolkit](https://naif.jpl.nasa.gov/naif/toolkit_MATLAB.html) — and specific SPICE kernels. Mice functions must be located on the Matlab path. The specific SPICE kernels used are all listed in `LoadSpice.m`, and the expected path to find them is in the same file (`./SPICE/` by default). Smaller kernels are packaged with PlanetMag, but larger generic kernels must be downloaded from the [generic kernels for satellites](https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/) page of the NAIF website. Earth data requires the latest Earth PCK file available at <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/earth_latest_high_prec.bpc>.
+PlanetMag requires Mice — [the Matlab implementation of the SPICE toolkit](https://naif.jpl.nasa.gov/naif/toolkit_MATLAB.html), specific SPICE kernels, and Matlab version 2020b or later.
+* Mice functions must be located on the Matlab path.
+* The specific SPICE kernels used are all listed in `functions/LoadSpice.m`, and the expected path to find them is in the same file (`./SPICE/` by default).
+* Smaller kernels are packaged with PlanetMag, but larger generic kernels must be downloaded from the [generic kernels for satellites](https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/) page of the NAIF website.
+* Earth data requires the latest Earth PCK file available at <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/earth_latest_high_prec.bpc>.
+* PlanetMag relies on the `pagemtimes` function, which was introduced in Matlab version 2020b.
 
 Some mission data (especially from ESA) uses Common Data Format (.cdf) files. Reading these files requires the CDF toolkit, available at <https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/latest/>. Matlab ships with a version of the toolkit that works for most files, but can lock up reading large files (>15 MB). An example script for converting CDF files to ASCII tables is in ConvertSwarmCDF.m.
 

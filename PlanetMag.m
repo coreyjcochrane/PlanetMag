@@ -102,6 +102,14 @@ function [T_h, B0vec, B1vec1, B1vec2, B1vec3, outFname, header] = PlanetMag(moon
     if ~exist('fPatternTseries', 'var'); fPatternTseries = 'TseriesData'; end
     if ~exist('figXtn', 'var'); figXtn = 'pdf'; end
     if ~exist('magPhase_deg', 'var'); magPhase_deg = 0; end
+
+    % Check if user has necessary Matlab version
+    try
+        isMATLABReleaseOlderThan("R2020b");
+    catch
+        warning(['Matlab version is older than R2020b. Update to this version or later for ' ...
+            'necessary functions such as pagemtimes. Otherwise errors will result.'])
+    end
     
     parentName = LoadSpice(moonName);
     SetPlotDefaults();
