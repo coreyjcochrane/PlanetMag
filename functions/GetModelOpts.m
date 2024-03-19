@@ -19,25 +19,29 @@ function [MagModel, CsheetModel, MPmodel, magModelDescrip, fEnd] = GetModelOpts(
 %           - ``1`` (or ``0``): IGRF-13 from Alken et al. (2021)
 %             https://doi.org/10.1186/s40623-020-01288-x
 %       - ``Jupiter``:
-%           - ``1``: VIP4 model from Connerney et al. (1998) https://doi.org/10.1029/97JA03726 +
+%           - ``1``: VIP4 model from Connerney et al. (1998) https://doi.org/10.1029/97JA03726
+%             (using more precise values from Connerney (2007)
+%             https://doi.org/10.1016/B978-044452748-6.00159-0) + analytical approximation of
 %             Connerney et al. (1981) current sheet model https://doi.org/10.1029/JA086iA10p08370
 %           - ``2``: O6 model from Connerney (1992) https://core.ac.uk/download/pdf/83644007.pdf +
 %             Khurana (1997) current sheet model https://doi.org/10.1029/97JA00563
 %           - ``3``: VIP4 model with O6 model dipole moment orientation + associated current sheet
 %             model, together from Khurana and Schwarzl (2005) https://doi.org/10.1029/2004JA010757
 %           - ``4``: JRM09 model from Connerney et al. (2018) https://doi.org/10.1002/2018GL077312
-%             + Connerney et al. (2020) current sheet model https://doi.org/10.1029/2020JA028138
+%             + analytical version of Connerney et al. (2020) current sheet model
+%             https://doi.org/10.1029/2020JA028138
 %           - ``5``: JRM09 model from Connerney et al. (2018) https://doi.org/10.1002/2018GL077312
-%             + Connerney et al. (1981) current sheet model https://doi.org/10.1029/JA086iA10p08370
-%             This model combination is as applied in Vance et al. (2021)
-%             https://doi.org/10.1029/2020JE006418
-%           - ``6``: VIP4 model from Connerney et al. (1998) https://doi.org/10.1029/97JA03726 +
-%             Khurana (1997) current sheet model https://doi.org/10.1029/97JA00563 This model
-%             combination is as applied in Seufert et al. (2011)
-%             https://doi.org/10.1016/j.icarus.2011.03.017
+%             + analytical approximation of Connerney et al. (1981) current sheet model
+%             https://doi.org/10.1029/JA086iA10p08370. This model combination is as applied in
+%             Vance et al. (2021) https://doi.org/10.1029/2020JE006418
+%           - ``6``: VIP4 model from Connerney et al. (1998) https://doi.org/10.1029/97JA03726
+%             (using more precise values from Connerney (2007)
+%             https://doi.org/10.1016/B978-044452748-6.00159-0) + Khurana (1997) current sheet
+%             model https://doi.org/10.1029/97JA00563 This model combination is as applied in
+%             Seufert et al. (2011) https://doi.org/10.1016/j.icarus.2011.03.017
 %           - ``7`` (or ``0``): JRM33 model from Connerney et al. (2021)
-%             https://doi.org/10.1029/2021JE007138 + Connerney et al. (2020) current sheet model
-%             https://doi.org/10.1029/2020JA028138.
+%             https://doi.org/10.1029/2021JE007138 + analytical version of Connerney et al. (2020)
+%             current sheet model https://doi.org/10.1029/2020JA028138
 %       - ``Saturn``:
 %           - ``1``: Burton et al. (2010) model with degree-1 external field
 %             https://doi.org/10.1029/2010GL045148

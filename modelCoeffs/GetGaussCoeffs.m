@@ -22,15 +22,16 @@ function [g, h, G, H, PlanetEqRadius, Nmax, NmaxExt] = GetGaussCoeffs(planet, ..
 %             generation." https://doi.org/10.1186/s40623-020-01288-x
 %       - ``Jupiter``
 %           - ``'MagFldJupiterVIP4'``: "New models of Jupiter's magnetic field constrained by the
-%             Io flux tube footprint." https://doi.org/10.1029/97JA03726
-%             (Voyager--Io footprint--Pioneer degree 4 model.)
+%             Io flux tube footprint." https://doi.org/10.1029/97JA03726 (Voyager--Io flux tube
+%             footprint--Pioneer degree 4 model.) The values we use are the more precise ones
+%             reported in "Planetary Magnetism" https://doi.org/10.1016/B978-044452748-6.00159-0
 %           - ``'MagFldJupiterGSFCO4'``: "The main magnetic field of Jupiter."
 %             https://doi.org/10.1029/JA081i016p02917 The P\lanetMag implementation is based on the
 %             update to System III (1965) conventions by Connerney (1992):
 %             https://core.ac.uk/download/pdf/83644007.pdf. The model is named GSFC O4 after the 
 %             institution where it was developed (Goddard Spaceflight Center, GSFC) and that it
 %             includes up to the octupole (degree 3) coefficients from a degree 4 expansion. 
-%           - ``'MagFldJupiterGSFCO6'``: Coefficients as repoted in "Magnetic Fields of the Outer
+%           - ``'MagFldJupiterGSFCO6'``: Coefficients as reported in "Magnetic Fields of the Outer
 %             Planets." https://doi.org/10.1007/s11214-009-9621-7, though originally described in
 %             Connerney (1992): https://core.ac.uk/download/pdf/83644007.pdf. Also developed at
 %             GSFC, this model includes the octupole coefficients from a degree 6 expansion, hence
