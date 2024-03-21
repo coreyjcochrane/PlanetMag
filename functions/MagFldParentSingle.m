@@ -1,5 +1,5 @@
 function Bvec_nT = MagFldParentSingle(g, h, r_km, theta, phi, PlanetEqRadius, ...
-    InternalFieldModel, ExternalFieldModel, magPhase_deg, Nmax, NmaxExt, SPHOUT)
+    InternalFieldModel, ExternalFieldModel, magPhase_deg, Nmax, NmaxExt, SPHOUT, ATTEN_SHEET)
 % Evaluate the magnetic field of the desired planet at specified locations according to the
 % specified internal and external field models.
 %
@@ -39,6 +39,9 @@ function Bvec_nT = MagFldParentSingle(g, h, r_km, theta, phi, PlanetEqRadius, ..
 %   field calculations (currently 1).
 % SPHOUT : bool, default=0
 %   Whether to return vectors aligned to spherical coordinate axes (true) or cartesian (false).
+% ATTEN_SHEET : bool, default=0
+%   Whether to attenuate current sheet models using the analytical approximations of Connerney et
+%   al. (1981), which are C1981, C2020, and Cassini 11, beyond :math:`50R_P`.
 %
 % Returns
 % -------
@@ -54,6 +57,7 @@ function Bvec_nT = MagFldParentSingle(g, h, r_km, theta, phi, PlanetEqRadius, ..
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     if ~exist('SPHOUT', 'var'); SPHOUT = 0; end
+    if ~exist('ATTEN_SHEET', 'var'); ATEEN_SHEET = 0; end
 
     magPhase = deg2rad(magPhase_deg);
     npts = length(r_km);
@@ -179,10 +183,11 @@ function Bvec_nT = MagFldParentSingle(g, h, r_km, theta, phi, PlanetEqRadius, ..
                 D = 3.6;
                 Theta0 = 9.3*pi/180;
                 Phi0 = (360-204.2)*pi/180-magPhase;
-                %u0I0 = 0.003058; % Maximum (in paper, 152.9)
-                % Average current constant in Gauss (Connerney 1982: u0I0/2 = 139.6 nT)
-                %u0I0 = 0.002792;
-                u0I0 = 0.002484; % Minimum (in paper, 124.2)
+                % The following values are doubled, as we use mu0*I0 instead of mu0*I0/2.
+                % u0I0 = 0.003122; % Maximum (in paper, 156.1)
+                % Average current constant in Gauss (Connerney 1982: u0I0/2 = 139.6nT)
+                u0I0 = 0.002792;
+                % u0I0 = 0.002484; % Minimum (in paper, 124.2)
 
             elseif strcmp(ExternalFieldModel,'Cassini11')
                 % Current Sheet from Dougherty et al. (2018) Table S2
@@ -207,13 +212,15 @@ function Bvec_nT = MagFldParentSingle(g, h, r_km, theta, phi, PlanetEqRadius, ..
             psi(ym ~= 0) = psi.*sign(ym);
             zed = zm/Rp_m;
 
-            % PlanetMag edit -- attenuate current sheet beyond certain distance.
-            % No major effect to field lines within 50 RJ
-            u0I0 = u0I0 * ones(1,npts);
-            [eBrho, eBzed] = deal(zeros(1,npts));
-            attentuation_distance = 50; % 50 RJ, way beyond Callisto orbit
-            outer = find(rho > attentuation_distance);
-            u0I0(outer) = u0I0(outer)./(rho(outer)/attentuation_distance).^2;   
+            if ATTEN_SHEET
+                % PlanetMag edit -- attenuate current sheet beyond certain distance.
+                % No major effect to field lines within 50 RJ
+                u0I0 = u0I0 * ones(1,npts);
+                [eBrho, eBzed] = deal(zeros(1,npts));
+                attentuation_distance = 50; % 50 RJ, way beyond Callisto orbit
+                outer = find(rho > attentuation_distance);
+                u0I0(outer) = u0I0(outer)./(rho(outer)/attentuation_distance).^2;   
+            end
             
             % Semi-infinite sheet with a = Ri
             a = Ri; % Inner radius

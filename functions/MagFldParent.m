@@ -1,5 +1,5 @@
 function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ...
-    InternalFieldModel, ExternalFieldModel, magPhase_deg, SPHOUT, Nmaxin)
+    InternalFieldModel, ExternalFieldModel, magPhase_deg, SPHOUT, Nmaxin, ATTEN_SHEET)
 % Evaluate the magnetic field of the desired planet at specified locations according to the
 % specified internal and external field models.
 %
@@ -45,6 +45,9 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
 %   Maximum degree to which to limit intrinsic field models. Only has an effect if the value passed
 %   is less than the lesser of the model maximum degree and the maximum implemented in spherical
 %   harmonic calculations (currently 10).
+% ATTEN_SHEET : bool, default=0
+%   Whether to attenuate current sheet models using the analytical approximations of Connerney et
+%   al. (1981), which are C1981, C2020, and Cassini 11, beyond :math:`50R_P`.
 %
 % Returns
 % -------
@@ -67,6 +70,7 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
     if ~exist('magphase_deg', 'var'); magPhase_deg = 0; end
     if ~exist('SPHOUT', 'var'); SPHOUT = 0; end
     if ~exist('Nmaxin', 'var'); Nmaxin = Inf; end
+    if ~exist('ATTEN_SHEET', 'var'); ATTEN_SHEET = 0; end
 
     magPhase = deg2rad(magPhase_deg);
     npts = length(r_km);
@@ -211,7 +215,7 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
             strcmp(ExternalFieldModel,'SphericalHarmonic'))
 
             if strcmp(ExternalFieldModel,'Connerney1981')
-                opt = 2;
+                opt = 1;
                 if opt == 1
                     % Current Sheet from 1981 publication, goes best with VIP4
                     Ri = 5; % Inner radius of current sheet in RJ
@@ -221,7 +225,7 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
                     Theta0 = 9.6*pi/180; % Colatitude of sheet axis in rad
                     % Longitude of sheet axis is 202 degrees SIII (1965) which is a left-handed
                     % coordinate system. For IAU_JUPITER, 360-lambdaSIII for right handed system
-                    Phi0 = (360-202)*pi/180-magPhase;
+                    Phi0 = (360-202)*pi/180 - magPhase;
                 else
                     % Current Sheet from JUNO workshop 2016
                     Ri = 5;
@@ -229,16 +233,17 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
                     D = 3.1;
                     u0I0 = 0.0037;
                     Theta0 = 6.5*pi/180;
-                    Phi0 = (360-206)*pi/180-magPhase;
+                    Phi0 = (360-206)*pi/180 - magPhase;
                 end
 
             elseif strcmp(ExternalFieldModel,'Connerney2020')
-                % Current Sheet from Connerney 2020 JGR publication
+                % Current sheet from Connerney 2020 JGR publication
                 Ri = 7.8;
                 Ro = 51.4;
                 D = 3.6;
                 Theta0 = 9.3*pi/180;
-                Phi0 = (360-204.2)*pi/180-magPhase;
+                Phi0 = (360-204.2)*pi/180 - magPhase;
+                % The following values are doubled, as we use mu0*I0 instead of mu0*I0/2.
                 % u0I0 = 0.003122; % Maximum (in paper, 156.1)
                 % Average current constant in Gauss (Connerney 1982: u0I0/2 = 139.6nT)
                 u0I0 = 0.002792;
@@ -268,18 +273,20 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
             psi(ym ~= 0) = psi(ym ~= 0).*sign(ym(ym ~= 0));
             zed = zm/Rp_m;
 
-            % PlanetMag edit -- attenuate current sheet beyond certain distance.
-            % No major effect to field lines within 50 RJ
-            u0I0 = u0I0 * ones(1,npts);
-            [eBrho, eBzed] = deal(zeros(1,npts));
-            attentuation_distance = 50; % 50 RJ, way beyond Callisto orbit
-            outer = find(rho > attentuation_distance);
-            u0I0(outer) = u0I0(outer)./(rho(outer)/attentuation_distance).^2;
+            if ATTEN_SHEET
+                % PlanetMag edit -- attenuate current sheet beyond certain distance.
+                % No major effect to field lines within 50 RJ
+                u0I0 = u0I0 * ones(1,npts);
+                [eBrho, eBzed] = deal(zeros(1,npts));
+                attentuation_distance = 50; % 50 RJ, way beyond Callisto orbit
+                outer = find(rho > attentuation_distance);
+                u0I0(outer) = u0I0(outer)./(rho(outer)/attentuation_distance).^2;
+            end
 
             % Semi-infinite sheet with a = Ri
             a = Ri; % Inner radius
 
-            % Region I: 0 < rho < 5RJ: within the start of the current sheet
+            % Region I: 0 < rho < a: within the start of the current sheet
             inner = find(rho < Ri);
             % a is held constant for p < inner radius, see last paragraph of Connerney 1981
             F1 = sqrt((zed(inner)-D).^2 + a^2);
@@ -292,7 +299,7 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
             % eBzed = (u0I0/2)*(2*D*(sqrt(zed^2 + a^2))^(-(1/a)/2) - (rho^2/4)*((zed-D)/ F1^3
             %    - (zed+D)/F2^3));
 
-            % Region II: rho > 5RJ AND Z > 2.5RJ (beyond start and above the current sheet)
+            % Region II: rho > a AND Z > D (beyond start and above the current sheet)
             above = find(abs(zed) > D);
             F1 = sqrt((zed(above)-D).^2 + rho(above).^2);
             F2 = sqrt((zed(above)+D).^2 + rho(above).^2);
@@ -301,7 +308,7 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
             eBzed(above) = (u0I0(above)/2).*(2*D./sqrt(zed(above).^2+rho(above).^2) ...
                 - (a^2/4)*((zed(above)-D)./F1.^3 - (zed(above)+D)./F2.^3));
 
-            % Region III: rho > 5RJ AND Z < 2.5RJ (within the current sheet)
+            % Region III: rho > a AND Z < D (within the current sheet)
             inside = find(~ ((rho < Ri) & (abs(zed) > D)) );
             F1 = sqrt((zed(inside)-D).^2 + rho(inside).^2);
             F2 = sqrt((zed(inside)+D).^2 + rho(inside).^2);
