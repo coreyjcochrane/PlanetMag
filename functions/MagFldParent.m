@@ -267,17 +267,18 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
             ym = -x*sin(Phi0) + y*cos(Phi0);
             zm = x*cos(Phi0)*sin(Theta0) + y*sin(Phi0)*sin(Theta0) + z*cos(Theta0);
 
-            % Convert to cylindrical coordinates divided by RP
+            % Convert to cylindrical coordinates divided by R_P
             rho = sqrt(xm.^2 + ym.^2) / Rp_m;
             psi = acos(xm/Rp_m./rho);
             psi(ym ~= 0) = psi(ym ~= 0).*sign(ym(ym ~= 0));
             zed = zm/Rp_m;
 
+            u0I0 = u0I0 * ones(1,npts);
+            [eBrho, eBzed] = deal(zeros(1,npts));
+
             if ATTEN_SHEET
                 % PlanetMag edit -- attenuate current sheet beyond certain distance.
                 % No major effect to field lines within 50 RJ
-                u0I0 = u0I0 * ones(1,npts);
-                [eBrho, eBzed] = deal(zeros(1,npts));
                 attentuation_distance = 50; % 50 RJ, way beyond Callisto orbit
                 outer = find(rho > attentuation_distance);
                 u0I0(outer) = u0I0(outer)./(rho(outer)/attentuation_distance).^2;
@@ -289,42 +290,39 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
             % Region I: 0 < rho < a: within the start of the current sheet
             inner = find(rho < Ri);
             % a is held constant for p < inner radius, see last paragraph of Connerney 1981
-            F1 = sqrt((zed(inner)-D).^2 + a^2);
-            F2 = sqrt((zed(inner)+D).^2 + a^2);
-            eBrho(inner) = (u0I0(inner)/2).*(rho(inner)/2).*(1./F1 - 1./F2);
-            eBzed(inner) = (u0I0(inner)/2).*(2*D./sqrt((zed(inner).^2 + a^2)) - ...
-                (rho(inner).^2/4).*((zed(inner)-D)./ F1.^3 - (zed(inner)+D)./F2.^3));
-            % Below is as reported in the publication, but appears to result in a discontinuity in
-            % field lines!
-            % eBzed = (u0I0/2)*(2*D*(sqrt(zed^2 + a^2))^(-(1/a)/2) - (rho^2/4)*((zed-D)/ F1^3
-            %    - (zed+D)/F2^3));
+            F1 = sqrt((zed(inner) - D).^2 + a^2);
+            F2 = sqrt((zed(inner) + D).^2 + a^2);
+            eBrho(inner) = (u0I0(inner)/2) .* (rho(inner)/2) .* (1./F1 - 1./F2);
+            eBzed(inner) = (u0I0(inner)/2) .* (2*D.*(zed(inner).^2 + a^2).^(-(1/a)/2) - ...
+                (rho(inner).^2/4) .* ((zed(inner) - D) ./ F1.^3 - (zed(inner) + D) ./ F2.^3));
 
             % Region II: rho > a AND Z > D (beyond start and above the current sheet)
             above = find(abs(zed) > D);
-            F1 = sqrt((zed(above)-D).^2 + rho(above).^2);
-            F2 = sqrt((zed(above)+D).^2 + rho(above).^2);
-            eBrho(above) = (u0I0(above)/2).*((1./rho(above)).*(F1-F2+2*D*sign(zed(above))) ...
-                - (a^2 .* rho(above)/4).*(1./F1.^3 - 1./F2.^3));
-            eBzed(above) = (u0I0(above)/2).*(2*D./sqrt(zed(above).^2+rho(above).^2) ...
-                - (a^2/4)*((zed(above)-D)./F1.^3 - (zed(above)+D)./F2.^3));
+            F1 = sqrt((zed(above) - D).^2 + rho(above).^2);
+            F2 = sqrt((zed(above) + D).^2 + rho(above).^2);
+            eBrho(above) = (u0I0(above)/2) .* ((1./rho(above)) .* (F1 - F2 + ...
+                2*D*sign(zed(above))) - (a^2 .* rho(above)/4) .* (1./F1.^3 - 1./F2.^3));
+            eBzed(above) = (u0I0(above)/2) .* (2*D./sqrt(zed(above).^2 + rho(above).^2) ...
+                - (a^2/4)*((zed(above) - D) ./ F1.^3 - (zed(above) + D) ./ F2.^3));
 
             % Region III: rho > a AND Z < D (within the current sheet)
             inside = find(~ ((rho < Ri) & (abs(zed) > D)) );
-            F1 = sqrt((zed(inside)-D).^2 + rho(inside).^2);
-            F2 = sqrt((zed(inside)+D).^2 + rho(inside).^2);
-            eBrho(inside) = (u0I0(inside)/2).*((1./rho(inside)).*(F1-F2+2*zed(inside)) ...
-                - (a^2*rho(inside)/4).*(1./F1.^3 -1./F2.^3));
-            eBzed(inside) = (u0I0(inside)/2).*(2*D./sqrt(zed(inside).^2+rho(inside).^2) ...
-                - (a^2/4)*((zed(inside)-D)./F1.^3 - (zed(inside)+D)./F2.^3)); % Same as region II
+            F1 = sqrt((zed(inside) - D).^2 + rho(inside).^2);
+            F2 = sqrt((zed(inside) + D).^2 + rho(inside).^2);
+            eBrho(inside) = (u0I0(inside)/2) .* ((1./rho(inside)) .* (F1 - F2 + 2*zed(inside)) ...
+                - (a^2*rho(inside)/4) .* (1./F1.^3 - 1./F2.^3));
+            eBzed(inside) = (u0I0(inside)/2) .* (2*D./sqrt(zed(inside).^2 + rho(inside).^2) ...
+                - (a^2/4)*((zed(inside) - D) ./ F1.^3 - (zed(inside) + D) ./ F2.^3));
+            % eBzed same as region II
 
-            % Subtract from Semi-infinite sheet with a = Ro from Semi-infinite sheet with a = Ri
+            % Subtract from semi-infinite sheet with a = Ro from Semi-infinite sheet with a = Ri
             % calculated above
             a = Ro; % Outer radius
-            F1 = sqrt((zed-D).^2 + a^2);
-            F2 = sqrt((zed+D).^2 + a^2);
-            eBrho = eBrho - (u0I0/2).*(rho/2).*(1./F1 - 1./F2);
-            eBzed = eBzed - (u0I0/2).*(2*D./sqrt((zed.^2 + a^2)) - (rho.^2/4).*((zed-D)./F1.^3 ...
-                - (zed+D)./F2.^3));
+            F1 = sqrt((zed - D).^2 + a^2);
+            F2 = sqrt((zed + D).^2 + a^2);
+            eBrho = eBrho - u0I0/2 .* (rho/2) .* (1./F1 - 1./F2);
+            eBzed = eBzed - u0I0/2 .* (2*D./sqrt((zed.^2 + a^2)) - (rho.^2/4) .* ((zed - D) ...
+                ./ F1.^3 - (zed+D)./F2.^3));
 
             eBx =  eBrho.*cos(psi)*cos(Theta0)*cos(Phi0) + eBzed*sin(Theta0)*cos(Phi0) ...
                 - eBrho.*sin(psi)*sin(Phi0);
