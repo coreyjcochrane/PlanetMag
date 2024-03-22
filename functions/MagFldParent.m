@@ -222,6 +222,7 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
                     Ro = 50; % Outer radius of current sheet in RJ, initially 50
                     D = 2.5; % Half-thickness of current sheet in RJ
                     u0I0 = 0.0045; % Current constant in Gauss (Connerney 1982: u0I0/2 = 225nT)
+                    IR = 0; % Radial current term introduced in C2020 model in MA
                     Theta0 = 9.6*pi/180; % Colatitude of sheet axis in rad
                     % Longitude of sheet axis is 202 degrees SIII (1965) which is a left-handed
                     % coordinate system. For IAU_JUPITER, 360-lambdaSIII for right handed system
@@ -232,6 +233,7 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
                     Ro = 56;
                     D = 3.1;
                     u0I0 = 0.0037;
+                    IR = 0;
                     Theta0 = 6.5*pi/180;
                     Phi0 = (360-206)*pi/180 - magPhase;
                 end
@@ -248,6 +250,9 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
                 % Average current constant in Gauss (Connerney 1982: u0I0/2 = 139.6nT)
                 u0I0 = 0.002792;
                 % u0I0 = 0.002484; % Minimum (in paper, 124.2)
+                IR = 16.7; % Radial current term introduced in C2020 model in MA. Note Table 2 of 
+                           % Connerney et al. (2020) has a column labeled mu0IR/2pi that should
+                           % instead be labeled IR.
 
             elseif strcmp(ExternalFieldModel,'Cassini11') || strcmp(ExternalFieldModel, ...
                     'Cassini11plus')
@@ -256,25 +261,33 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
                 Ro = 20; % Outer radius of current sheet in RS
                 D = 2.5; % Half-thickness of current sheet in RS
                 u0I0 = 0.0000400; % Current constant in Gauss for nominal model
+                IR = 0; % Radial current term introduced in C2020 model in MA
                 % u0I0 = 0.0000299; % Minimum from per-rev models
                 % u0I0 = 0.0000600; % Maximum from per-rev models
                 Theta0 = 0*pi/180; % Colatitude of sheet axis in rad
                 Phi0 = 0*pi/180; % Longitude of sheet axis in rad
+
+            else
+
+                error(['ExternalFieldModel ' ExternalFieldModel ' not recognized.'])
             end
 
             % Rotate to plasma sheet coordinates
-            xm = x*cos(Phi0)*cos(Theta0) + y*sin(Phi0)*cos(Theta0) - z*sin(Theta0);
-            ym = -x*sin(Phi0) + y*cos(Phi0);
-            zm = x*cos(Phi0)*sin(Theta0) + y*sin(Phi0)*sin(Theta0) + z*cos(Theta0);
+            cPhi0   = cos(Phi0);   sPhi0   = sin(Phi0);
+            cTheta0 = cos(Theta0); sTheta0 = sin(Theta0);
+            xm = x*cPhi0*cTheta0 + y*sPhi0*cTheta0 - z*sTheta0;
+            ym = -x*sPhi0 + y*cPhi0;
+            zm = x*cPhi0*sTheta0 + y*sPhi0*sTheta0 + z*cTheta0;
 
             % Convert to cylindrical coordinates divided by R_P
             rho = sqrt(xm.^2 + ym.^2) / Rp_m;
-            psi = acos(xm/Rp_m./rho);
-            psi(ym ~= 0) = psi(ym ~= 0).*sign(ym(ym ~= 0));
-            zed = zm/Rp_m;
+            psi = acos(xm/Rp_m ./ rho);
+            psi(ym ~= 0) = psi(ym ~= 0) .* sign(ym(ym ~= 0));
+            cpsi = cos(psi); spsi = sin(psi);
+            zed = zm / Rp_m;
 
             u0I0 = u0I0 * ones(1,npts);
-            [eBrho, eBzed] = deal(zeros(1,npts));
+            [eBrho, eBpsi, eBzed] = deal(zeros(1,npts));
 
             if ATTEN_SHEET
                 % PlanetMag edit -- attenuate current sheet beyond certain distance.
@@ -289,7 +302,6 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
 
             % Region I: 0 < rho < a: within the start of the current sheet
             inner = find(rho < Ri);
-            % a is held constant for p < inner radius, see last paragraph of Connerney 1981
             F1 = sqrt((zed(inner) - D).^2 + a^2);
             F2 = sqrt((zed(inner) + D).^2 + a^2);
             eBrho(inner) = (u0I0(inner)/2) .* (rho(inner)/2) .* (1./F1 - 1./F2);
@@ -324,11 +336,32 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
             eBzed = eBzed - u0I0/2 .* (2*D./sqrt((zed.^2 + a^2)) - (rho.^2/4) .* ((zed - D) ...
                 ./ F1.^3 - (zed+D)./F2.^3));
 
-            eBx =  eBrho.*cos(psi)*cos(Theta0)*cos(Phi0) + eBzed*sin(Theta0)*cos(Phi0) ...
-                - eBrho.*sin(psi)*sin(Phi0);
-            eBy =  eBrho.*cos(psi)*cos(Theta0)*sin(Phi0) + eBzed*sin(Theta0)*sin(Phi0) ...
-                + eBrho.*sin(psi)*cos(Phi0);
-            eBz = -eBrho.*cos(psi)*sin(Theta0) + eBzed*cos(Theta0);
+            if IR ~= 0
+                % Radial current term introduced by Connerney et al. (2020)
+                % The below evaluation is as detailed from Eqs 23-25 of Wilson et al. (2023):
+                % https://doi.org/10.1007/s11214-023-00961-3
+                eBpsi0 = 2e8 * IR / rho / Rp_m; % Eq 23 of Wilson et al. (2023)
+                % The following are Eq 25 of Wilson et al. (2023), with the 1/rho rolled in eBpsi0
+                eBpsi(abs(zed) < D)  = -eBpsi0 * zed / D;
+                eBpsi(abs(zed) >= D) = -eBpsi0 * sign(zed);
+                eBpsi(rho == 0) = 0; % Do this one last so it overwrites any others with rho = 0
+
+                % Different calculation of Cartesian mapping back to System III frame since we have
+                % eBpsi term
+                eBx =  eBrho .* (cTheta0*cPhi0*cpsi - sPhi0*spsi) ...
+                    + eBzed * sTheta0*cPhi0;
+                eBy =  eBrho .* (cpsi*cTheta0*sPhi0 + spsi*cPhi0) ...
+                    + eBzed * sTheta0*sPhi0;
+                eBz = -eBrho .* cpsi*sTheta0 + eBzed * cTheta0;
+
+            else
+
+                eBx =  eBrho.*cpsi*cTheta0*cPhi0 + eBzed*sTheta0*cPhi0 ...
+                    - eBrho.*spsi*sPhi0;
+                eBy =  eBrho.*cpsi*cTheta0*sPhi0 + eBzed*sTheta0*sPhi0 ...
+                    + eBrho.*spsi*cPhi0;
+                eBz = -eBrho.*cpsi*sTheta0 + eBzed*cTheta0;
+            end
 
         elseif strcmp(ExternalFieldModel,'Khurana1997') % Khurana plasma sheet model
 
@@ -339,6 +372,9 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
             Phi0 = (360-202)*pi/180-magPhase;
 
             thetacs = Theta0;
+
+            cPhi0   = cos(Phi0);   sPhi0   = sin(Phi0);
+            cTheta0 = cos(Theta0); sTheta0 = sin(Theta0);
 
             % Constants: The best-fit parameters obtained from Pioneer 10, Voyager 1, and Voyager 2
             % outbound data
@@ -369,15 +405,16 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
             rRj = r/Rp_m;
 
             % Convert to plasma sheet coordinates
-            xm =  xRj*cos(Phi0)*cos(Theta0) + yRj*sin(Phi0)*cos(Theta0) - zRj*sin(Theta0);
-            ym = -xRj*sin(Phi0) + yRj*cos(Phi0);
-            zm =  xRj*cos(Phi0)*sin(Theta0) + yRj*sin(Phi0)*sin(Theta0) + zRj*cos(Theta0);
+            xm =  xRj*cPhi0*cTheta0 + yRj*sPhi0*cTheta0 - zRj*sTheta0;
+            ym = -xRj*sPhi0 + yRj*cPhi0;
+            zm =  xRj*cPhi0*sTheta0 + yRj*sPhi0*sTheta0 + zRj*cTheta0;
             rm =  rRj;
 
             % Convert to cylindrical coordinates
             rho = sqrt(xm.^2 + ym.^2);
             psi = acos(xm./rho);
             psi(ym ~= 0) = psi.*sign(ym);
+            cpsi = cos(psi); spsi = sin(psi);
             zed = zm;
 
             K0 = tan(thetacs);
@@ -422,14 +459,14 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
             % Bzed = (1/rho)*dfdrho;
 
             % Convert from cylindrical to cartesian coordinates
-            eBxps = eBrho.*cos(psi) - eBpsi.*sin(psi);
-            eByps = eBrho.*sin(psi) + eBpsi.*cos(psi);
+            eBxps = eBrho.*cpsi - eBpsi.*spsi;
+            eByps = eBrho.*spsi + eBpsi.*cpsi;
             eBzps = eBzed;
 
             % Convert from plasma sheet coordinates to Jupiter coordinates
-            eBx =  eBxps*cos(Theta0)*cos(Phi0) - eByps*sin(Phi0) + eBzps*sin(Theta0)*cos(Phi0);
-            eBy =  eBxps*cos(Theta0)*sin(Phi0) + eByps*cos(Phi0) + eBzps*sin(Theta0)*sin(Phi0);
-            eBz = -eBxps*sin(Theta0) + eBzps*cos(Theta0);
+            eBx =  eBxps*cTheta0*cPhi0 - eByps*sPhi0 + eBzps*sTheta0*cPhi0;
+            eBy =  eBxps*cTheta0*sPhi0 + eByps*cPhi0 + eBzps*sTheta0*sPhi0;
+            eBz = -eBxps*sTheta0 + eBzps*cTheta0;
 
             % convert from nT to Gauss for combining
             eBx = eBx * 1e-5;
