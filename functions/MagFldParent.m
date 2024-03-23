@@ -340,7 +340,7 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
                 % Radial current term introduced by Connerney et al. (2020)
                 % The below evaluation is as detailed from Eqs 23-25 of Wilson et al. (2023):
                 % https://doi.org/10.1007/s11214-023-00961-3
-                eBpsi0 = 2e8 * IR / rho / Rp_m; % Eq 23 of Wilson et al. (2023)
+                eBpsi0 = 2e8 * IR ./ rho / Rp_m; % Eq 23 of Wilson et al. (2023)
                 % The following are Eq 25 of Wilson et al. (2023), with the 1/rho rolled in eBpsi0
                 eBpsi(abs(zed) < D)  = -eBpsi0 * zed / D;
                 eBpsi(abs(zed) >= D) = -eBpsi0 * sign(zed);
@@ -348,11 +348,15 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
 
                 % Different calculation of Cartesian mapping back to System III frame since we have
                 % eBpsi term
-                eBx =  eBrho .* (cTheta0*cPhi0*cpsi - sPhi0*spsi) ...
-                    + eBzed * sTheta0*cPhi0;
-                eBy =  eBrho .* (cpsi*cTheta0*sPhi0 + spsi*cPhi0) ...
-                    + eBzed * sTheta0*sPhi0;
-                eBz = -eBrho .* cpsi*sTheta0 + eBzed * cTheta0;
+                eBx =  eBrho .* ( cPhi0*cTheta0*cpsi - sPhi0*spsi) ...
+                     - eBpsi .* ( cPhi0*cTheta0*spsi + sPhi0*cpsi) ...
+                     + eBzed * sTheta0*cPhi0;
+                eBy =  eBrho .* ( sPhi0*cTheta0*cpsi + cPhi0*spsi) ...
+                     + eBpsi .* (-sPhi0*cTheta0*spsi + cPhi0*cpsi) ...
+                     + eBzed * sTheta0*sPhi0;
+                eBz = -eBrho .* cpsi*sTheta0 ...
+                     + eBpsi .* sTheta0*spsi ...
+                     + eBzed *  cTheta0;
 
             else
 
