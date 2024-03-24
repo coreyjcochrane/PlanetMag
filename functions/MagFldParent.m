@@ -250,9 +250,10 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
                 % Average current constant in Gauss (Connerney 1982: u0I0/2 = 139.6nT)
                 u0I0 = 0.002792;
                 % u0I0 = 0.002484; % Minimum (in paper, 124.2)
-                IR = 16.7; % Radial current term introduced in C2020 model in MA. Note Table 2 of 
-                           % Connerney et al. (2020) has a column labeled mu0IR/2pi that should
-                           % instead be labeled IR.
+                IR = 16.7 * 1e-5; % Radial current term introduced in C2020 model in MA, with
+                                  % conversion from nT to G. Note Table 2 of Connerney et al.
+                                  % (2020) has a column labeled mu0IR/2pi that should instead be
+                                  % labeled IR.
 
             elseif strcmp(ExternalFieldModel,'Cassini11') || strcmp(ExternalFieldModel, ...
                     'Cassini11plus')
@@ -342,8 +343,10 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
                 % https://doi.org/10.1007/s11214-023-00961-3
                 eBpsi0 = 2e8 * IR ./ rho / Rp_m; % Eq 23 of Wilson et al. (2023)
                 % The following are Eq 25 of Wilson et al. (2023), with the 1/rho rolled in eBpsi0
-                eBpsi(abs(zed) < D)  = -eBpsi0 * zed / D;
-                eBpsi(abs(zed) >= D) = -eBpsi0 * sign(zed);
+                within = find(abs(zed) < D);
+                eBpsi(within)  = -eBpsi0(within) .* zed(within) / D;
+                outer = find(abs(zed) >= D);
+                eBpsi(outer) = -eBpsi0(outer) .* sign(zed(outer));
                 eBpsi(rho == 0) = 0; % Do this one last so it overwrites any others with rho = 0
 
                 % Different calculation of Cartesian mapping back to System III frame since we have
@@ -355,16 +358,17 @@ function [Bvec_nT, Mdip_nT, Odip_km] = MagFldParent(planet, r_km, theta, phi, ..
                      + eBpsi .* (-sPhi0*cTheta0*spsi + cPhi0*cpsi) ...
                      + eBzed * sTheta0*sPhi0;
                 eBz = -eBrho .* cpsi*sTheta0 ...
-                     + eBpsi .* sTheta0*spsi ...
+                     + eBpsi .* spsi*sTheta0 ...
                      + eBzed *  cTheta0;
 
             else
 
-                eBx =  eBrho.*cpsi*cTheta0*cPhi0 + eBzed*sTheta0*cPhi0 ...
-                    - eBrho.*spsi*sPhi0;
-                eBy =  eBrho.*cpsi*cTheta0*sPhi0 + eBzed*sTheta0*sPhi0 ...
-                    + eBrho.*spsi*cPhi0;
-                eBz = -eBrho.*cpsi*sTheta0 + eBzed*cTheta0;
+                eBx =  eBrho .* ( cPhi0*cTheta0*cpsi - sPhi0*spsi) ...
+                     + eBzed * sTheta0*cPhi0;
+                eBy =  eBrho .* ( sPhi0*cTheta0*cpsi + cPhi0*spsi) ...
+                     + eBzed * sTheta0*sPhi0;
+                eBz = -eBrho .* cpsi*sTheta0 ...
+                     + eBzed *  cTheta0;
             end
 
         elseif strcmp(ExternalFieldModel,'Khurana1997') % Khurana plasma sheet model
