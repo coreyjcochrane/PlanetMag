@@ -57,10 +57,9 @@ function Bvec_nT = MagFldParentSingle(g, h, r_km, theta, phi, PlanetEqRadius, ..
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     if ~exist('SPHOUT', 'var'); SPHOUT = 0; end
-    if ~exist('ATTEN_SHEET', 'var'); ATEEN_SHEET = 0; end
+    if ~exist('ATTEN_SHEET', 'var'); ATTEN_SHEET = 0; end
 
     magPhase = deg2rad(magPhase_deg);
-    npts = length(r_km);
 
     %% Adjust inputs and get dipole parameters
   
@@ -166,6 +165,7 @@ function Bvec_nT = MagFldParentSingle(g, h, r_km, theta, phi, PlanetEqRadius, ..
                     u0I0 = 0.0045; % Current constant in Gauss (Connerney 1982: u0I0/2 = 225 nT)
                     Theta0 = 9.6*pi/180; % Colatitude of sheet axis in rad
                     Phi0 = (360-202)*pi/180-magPhase;
+                    IR = 0;
                 else
                     % Current sheet from JUNO workshop 2016
                     Ri = 5;
@@ -174,6 +174,7 @@ function Bvec_nT = MagFldParentSingle(g, h, r_km, theta, phi, PlanetEqRadius, ..
                     u0I0 = 0.0037;
                     Theta0 = 6.5*pi/180;
                     Phi0 = (360-206)*pi/180-magPhase;
+                    IR = 0;
                 end
 
             elseif strcmp(ExternalFieldModel,'Connerney2020')
@@ -188,6 +189,7 @@ function Bvec_nT = MagFldParentSingle(g, h, r_km, theta, phi, PlanetEqRadius, ..
                 % Average current constant in Gauss (Connerney 1982: u0I0/2 = 139.6nT)
                 u0I0 = 0.002792;
                 % u0I0 = 0.002484; % Minimum (in paper, 124.2)
+                IR = 16.7 * 1e-5; % See MagFldParent for more info
 
             elseif strcmp(ExternalFieldModel,'Cassini11')
                 % Current Sheet from Dougherty et al. (2018) Table S2
@@ -199,6 +201,11 @@ function Bvec_nT = MagFldParentSingle(g, h, r_km, theta, phi, PlanetEqRadius, ..
                 %u0I0 = 0.0000299; % Minimum from per-rev models
                 Theta0 = 0*pi/180; % Colatitude of sheet axis in rad
                 Phi0 = 0*pi/180; % Longitude of sheet axis in rad
+                IR = 0;
+                
+            else
+
+                error(['ExternalFieldModel ' ExternalFieldModel ' not recognized.'])
             end
 
             % Rotate to plasma sheet coordinates
@@ -228,12 +235,8 @@ function Bvec_nT = MagFldParentSingle(g, h, r_km, theta, phi, PlanetEqRadius, ..
                 F1 = sqrt((zed-D).^2 + a^2);
                 F2 = sqrt((zed+D).^2 + a^2);
                 eBrho = (u0I0/2).*(rho/2).*(1./F1 - 1./F2);
-                eBzed = (u0I0/2).*(2*D./sqrt((zed.^2 + a^2)) ...
-                    - (rho.^2/4).*((zed-D)./ F1.^3 - (zed+D)./F2.^3));
-                % Below is as reported in the publication, but appears to result in a discontinuity in
-                % field lines!
-                % eBzed = (u0I0/2)*(2*D*(sqrt(zed^2 + a^2))^(-(1/a)/2) - (rho^2/4)*((zed-D)/ F1^3 ...
-                %     - (zed+D)/F2^3));
+                eBzed = (u0I0/2)*(2*D*(zed^2 + a^2)^(-(1/a)/2) - (rho^2/4)*((zed-D)/ F1^3 ...
+                     - (zed+D)/F2^3));
             elseif abs(zed) > D
                 % Region II: rho > 5RJ AND Z > 2.5RJ (beyond start and above the current sheet)
                 F1 = sqrt((zed-D).^2 + rho.^2);
@@ -245,7 +248,6 @@ function Bvec_nT = MagFldParentSingle(g, h, r_km, theta, phi, PlanetEqRadius, ..
 
             else
                 % Region III: rho > 5RJ AND Z < 2.5RJ (within the current sheet)
-                inside = find(~ ((rho < Ri) & (abs(zed) > D)) );
                 F1 = sqrt((zed-D).^2 + rho.^2);
                 F2 = sqrt((zed+D).^2 + rho.^2);
                 eBrho = (u0I0/2).*((1./rho).*(F1-F2+2*zed) ...
@@ -263,11 +265,32 @@ function Bvec_nT = MagFldParentSingle(g, h, r_km, theta, phi, PlanetEqRadius, ..
             eBzed = eBzed - (u0I0/2).*(2*D./sqrt((zed.^2 + a^2)) - (rho.^2/4).*((zed-D)./F1.^3 ...
                 - (zed+D)./F2.^3));
 
-            eBx =  eBrho.*cos(psi)*cos(Theta0)*cos(Phi0) + eBzed*sin(Theta0)*cos(Phi0) ...
-                - eBrho.*sin(psi)*sin(Phi0);
-            eBy =  eBrho.*cos(psi)*cos(Theta0)*sin(Phi0) + eBzed*sin(Theta0)*sin(Phi0) ...
-                + eBrho.*sin(psi)*cos(Phi0);
-            eBz = -eBrho.*cos(psi)*sin(Theta0) + eBzed*cos(Theta0);
+            if IR ~= 0
+                % Radial current term introduced by Connerney et al. (2020)
+                % The below evaluation is as detailed from Eqs 23-25 of Wilson et al. (2023):
+                % https://doi.org/10.1007/s11214-023-00961-3
+                eBpsi0 = 2e8 * IR ./ rho / Rp_m; % Eq 23 of Wilson et al. (2023)
+                % The following are Eq 25 of Wilson et al. (2023), with the 1/rho rolled in eBpsi0
+                within = find(abs(zed) < D);
+                eBpsi(within)  = -eBpsi0(within) .* zed(within) / D;
+                outer = find(abs(zed) >= D);
+                eBpsi(outer) = -eBpsi0(outer) .* sign(zed(outer));
+                eBpsi(rho == 0) = 0; % Do this one last so it overwrites any others with rho = 0
+            else
+
+                eBpsi = 0;
+            end
+
+
+            eBx =  eBrho * ( cPhi0*cTheta0*cpsi - sPhi0*spsi) ...
+                 - eBpsi * ( cPhi0*cTheta0*spsi + sPhi0*cpsi) ...
+                 + eBzed * sTheta0*cPhi0;
+            eBy =  eBrho * ( sPhi0*cTheta0*cpsi + cPhi0*spsi) ...
+                 + eBpsi * (-sPhi0*cTheta0*spsi + cPhi0*cpsi) ...
+                 + eBzed * sTheta0*sPhi0;
+            eBz = -eBrho * cpsi*sTheta0 ...
+                 + eBpsi * spsi*sTheta0 ...
+                 + eBzed *  cTheta0;
 
         elseif strcmp(ExternalFieldModel,'Khurana1997') % Khurana plasma sheet model
 
