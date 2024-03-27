@@ -249,5 +249,6 @@ function WriteTimeSeries(scName, opt, MPopt, moonName, orbNum, outFstr, FULLORBI
         end
         outFname = fullfile([char(fileList(i)) outFstr '.mat']);
         save(outFname, 't_UTC', 'BxS3_nT', 'ByS3_nT', 'BzS3_nT');
+        disp(['Data saved to file: ' outFname])
     end
 end
