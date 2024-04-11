@@ -13,9 +13,9 @@ sys.path.append(os.path.dirname(__file__))
 from misc.upgreek import upgreekDefs
 
 project = 'PlanetMag'
-copyright = '2023, California Institute of Technology'
+copyright = '2024, California Institute of Technology'
 author = 'Corey J. Cochrane and Marshall J. Styczinski'
-release = 'v1.0.0'
+release = 'v1.0.2'
 github_url = 'https://github.com/coreyjcochrane/planetmag'
 
 # -- General configuration ---------------------------------------------------
